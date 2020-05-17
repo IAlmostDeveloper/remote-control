@@ -1,7 +1,6 @@
 package ru.ialmostdeveloper.remotecontrol.mqtt;
 
 import android.util.Log;
-import android.widget.Toast;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
@@ -18,19 +17,19 @@ public class MqttManager {
     private MqttStorage storage;
     private MqttAndroidClient client;
     private MqttConnectOptions connectOptions;
-    private List<String> topicsList;
+    private List<String> subscribeTopicsList;
 
     public MqttManager(MqttStorage storage, MqttAndroidClient client,
-                       MqttConnectOptions connectOptions, List<String> topicsList){
+                       MqttConnectOptions connectOptions, List<String> topicsList) {
         this.storage = storage;
-        this.topicsList = topicsList;
+        this.subscribeTopicsList = topicsList;
         this.client = client;
         this.connectOptions = connectOptions;
-        
+
         connect();
     }
 
-    public void publish(String topic, String message){
+    public void publish(String topic, String message) {
         MqttMessage mqttMessage = new MqttMessage(message.getBytes());
         try {
             client.publish(topic, mqttMessage);
@@ -39,15 +38,14 @@ public class MqttManager {
         }
     }
 
-    private void connect(){
+    private void connect() {
         try {
             client.connect(connectOptions, null, new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
                     try {
-                        for(String topic : topicsList)
+                        for (String topic : subscribeTopicsList)
                             client.subscribe(topic, 0);
-                        Log.d("debugtag", storage.getMqttHost());
                         client.publish("remoteControlClient",
                                 new MqttMessage(("Client " + client.getClientId() + "  connected successfully!").getBytes()));
                     } catch (MqttException e) {

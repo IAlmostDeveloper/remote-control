@@ -30,14 +30,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ((MyApplication)getApplication())
+        ((MyApplication) getApplication())
                 .getAppComponent()
                 .inject(this);
 
         StringBuilder text = new StringBuilder();
-        for (int entry: controllersList.get("RC5").getControlButtons().values())
+        for (int entry : controllersList.get("RC5").getControlButtons().values())
             text.append(Integer.toHexString(entry)).append("\n");
-        ((TextView)findViewById(R.id.nameTextView)).setText(text.toString());
+        ((TextView) findViewById(R.id.nameTextView)).setText(text.toString());
 
         findViewById(R.id.nameTextView).setOnClickListener(new View.OnClickListener() {
             @Override

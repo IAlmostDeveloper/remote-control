@@ -18,66 +18,60 @@ import ru.ialmostdeveloper.remotecontrol.mqtt.MqttStorage;
 
 @Module
 class AppModule {
-    AppModule(){
+    AppModule() {
 
     }
 
-    private HashMap<String, Integer>  RC5StandardControls = new HashMap<String, Integer>(){{
-        put("TurnOn", 0x80C);
-        put("Channel1", 0x801);
-        put("Previous", 0x820);
-        put("Next", 0x821);
-    }
+    private HashMap<String, Integer> RC5StandardControls = new HashMap<String, Integer>() {
+        {
+            put("TurnOn", 0x80C);
+            put("Channel1", 0x801);
+            put("Previous", 0x820);
+            put("Next", 0x821);
+        }
     };
 
     @Provides
-    HashMap<String, IController> provideControllersList(){
+    HashMap<String, IController> provideControllersList() {
         HashMap<String, IController> controllersList = new HashMap<>();
         controllersList.put("RC5", new RC5Controller(RC5StandardControls));
         return controllersList;
     }
 
     @Provides
-    HashMap<String, Integer> provideRC5StandardControls(){
+    HashMap<String, Integer> provideRC5StandardControls() {
         return RC5StandardControls;
     }
 
     @Provides
-    String provideMqttHost(){
-        return "tcp://tailor.cloudmqtt.com:12878";
+    String provideMqttHost(MqttStorage storage) {
+        return storage.readMqttHost();
     }
 
     @Provides
-    MqttAndroidClient provideMqttClient(Context context, String mqttHost){
+    MqttAndroidClient provideMqttClient(Context context, String mqttHost) {
         return new MqttAndroidClient(context,
                 mqttHost, "ExampleClientID" + System.currentTimeMillis());
     }
 
     @Provides
-    MqttConnectOptions provideMqttConnectOptions(){
-        MqttConnectOptions options = new MqttConnectOptions();
-        options.setAutomaticReconnect(true);
-        options.setCleanSession(false);
-        options.setUserName("pyhyvrkj");
-        options.setPassword("yc_uB67FT97v".toCharArray());
-        return options;
+    MqttConnectOptions provideMqttConnectOptions(MqttStorage storage) {
+        return storage.readMqttConnectionOptions();
     }
 
     @Provides
-    List<String> provideMqttTopicsList(){
-        ArrayList<String> topics = new ArrayList<>();
-        topics.add("devices/1/remote");
-        return topics;
+    List<String> provideMqttSubscribeTopicsList(MqttStorage storage) {
+        return storage.readMqttSubscribeTopicsList();
     }
 
     @Provides
-    MqttStorage provideMqttStorage(Context context){
+    MqttStorage provideMqttStorage(Context context) {
         return new MqttStorage(context);
     }
 
     @Provides
     MqttManager provideMqttManager(MqttStorage mqttStorage, MqttAndroidClient mqttClient, MqttConnectOptions mqttConnectOptions,
-                                   List<String> mqttTopicsList){
-        return new MqttManager(mqttStorage, mqttClient, mqttConnectOptions, mqttTopicsList);
+                                   List<String> mqttSubscribeTopicsList) {
+        return new MqttManager(mqttStorage, mqttClient, mqttConnectOptions, mqttSubscribeTopicsList);
     }
 }
