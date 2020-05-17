@@ -30,11 +30,19 @@ public class MqttStorage {
         File file = new File(folder.getAbsolutePath() + "MqttHost.txt");
         StringBuilder mqttHost = new StringBuilder();
         try {
-            FileInputStream stream = new FileInputStream(file);
-            int i;
+            if (file.exists()) {
+                FileInputStream stream = new FileInputStream(file);
+                int i;
 
-            while ((i = stream.read()) != -1) {
-                mqttHost.append((char) i);
+                while ((i = stream.read()) != -1) {
+                    mqttHost.append((char) i);
+                }
+            } else {
+                try {
+                    file.createNewFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -75,14 +83,23 @@ public class MqttStorage {
         File file = new File(folder.getAbsolutePath() + "MqttControllersList.txt");
         StringBuilder mqttControllersRaw = new StringBuilder();
         try {
-            FileInputStream stream = new FileInputStream(file);
-            int i;
+            if (file.exists()) {
+                FileInputStream stream = new FileInputStream(file);
+                int i;
 
-            while ((i = stream.read()) != -1) {
-                mqttControllersRaw.append((char) i);
+                while ((i = stream.read()) != -1) {
+                    mqttControllersRaw.append((char) i);
+                }
+                Type type = new TypeToken<HashMap<String, IController>>() {
+                }.getType();
+                controllerHashMap = new Gson().fromJson(mqttControllersRaw.toString(), type);
+            } else {
+                try {
+                    file.createNewFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
-            Type type = new TypeToken<HashMap<String, IController>>(){}.getType();
-            controllerHashMap = new Gson().fromJson(mqttControllersRaw.toString(), type);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -123,13 +140,21 @@ public class MqttStorage {
         StringBuilder mqttOptionsRaw = new StringBuilder();
         MqttConnectOptions options = new MqttConnectOptions();
         try {
-            FileInputStream stream = new FileInputStream(file);
-            int i;
+            if (file.exists()) {
+                FileInputStream stream = new FileInputStream(file);
+                int i;
 
-            while ((i = stream.read()) != -1) {
-                mqttOptionsRaw.append((char) i);
+                while ((i = stream.read()) != -1) {
+                    mqttOptionsRaw.append((char) i);
+                }
+                options = new Gson().fromJson(mqttOptionsRaw.toString(), MqttConnectOptions.class);
+            } else {
+                try {
+                    file.createNewFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
-            options = new Gson().fromJson(mqttOptionsRaw.toString(), MqttConnectOptions.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -163,27 +188,36 @@ public class MqttStorage {
         }
     }
 
-    public List<String> readMqttSubscribeTopicsList(){
+    public List<String> readMqttSubscribeTopicsList() {
         File folder = new File(context.getFilesDir(), "mqtt");
         File file = new File(folder.getAbsolutePath() + "MqttSubscribeTopics.txt");
         StringBuilder mqttOptionsRaw = new StringBuilder();
         ArrayList<String> subscribeTopics = new ArrayList<>();
         try {
-            FileInputStream stream = new FileInputStream(file);
-            int i;
+            if (file.exists()) {
+                FileInputStream stream = new FileInputStream(file);
+                int i;
 
-            while ((i = stream.read()) != -1) {
-                mqttOptionsRaw.append((char) i);
+                while ((i = stream.read()) != -1) {
+                    mqttOptionsRaw.append((char) i);
+                }
+                Type type = new TypeToken<ArrayList<String>>() {
+                }.getType();
+                subscribeTopics = new Gson().fromJson(mqttOptionsRaw.toString(), type);
+            } else {
+                try {
+                    file.createNewFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
-            Type type = new TypeToken<ArrayList<String>>(){}.getType();
-            subscribeTopics = new Gson().fromJson(mqttOptionsRaw.toString(), type);
         } catch (IOException e) {
             e.printStackTrace();
         }
         return subscribeTopics;
     }
 
-    public void writeMqttSubscribeTopicsList(List<String> subscribeTopics){
+    public void writeMqttSubscribeTopicsList(List<String> subscribeTopics) {
         File folder = new File(context.getFilesDir(), "mqtt");
         File file = new File(folder.getAbsolutePath() + "MqttSubscribeTopics.txt");
         if (!folder.exists()) {

@@ -55,7 +55,7 @@ public class MqttManager {
 
                 @Override
                 public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                    Log.d("debugtag", Objects.requireNonNull(exception.getMessage()));
+                    Log.d("debugtag123", Objects.requireNonNull(exception.getMessage()));
                 }
             });
         } catch (MqttException e) {
