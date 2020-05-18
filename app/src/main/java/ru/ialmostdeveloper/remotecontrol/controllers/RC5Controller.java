@@ -1,34 +1,41 @@
 package ru.ialmostdeveloper.remotecontrol.controllers;
 
-import java.util.HashMap;
+import java.util.List;
 
 public class RC5Controller implements IController {
-    private HashMap<String, Integer> controlButtons;
+    private List<ControllerButton> controlButtons;
+    private String deviceId;
 
-    public RC5Controller(HashMap<String, Integer> controlButtons){
+    public RC5Controller(String deviceId, List<ControllerButton> controlButtons) {
+        this.deviceId = deviceId;
         setControlButtons(controlButtons);
     }
 
     @Override
-    public HashMap<String, Integer> getControlButtons() {
+    public List<ControllerButton> getControlButtons() {
         return controlButtons;
     }
 
     @Override
-    public void setControlButtons(HashMap<String, Integer> controlButtons) {
+    public void setControlButtons(List<ControllerButton> controlButtons) {
         this.controlButtons = controlButtons;
     }
 
     @Override
-    public int getControlButtonCode(String name) {
-        if(!controlButtons.containsKey(name))
-            throw new IllegalArgumentException("Key is not in HashMap: " + name);
-        return controlButtons.get(name);
+    public long getControlButtonCode(String name) {
+        for (ControllerButton button : controlButtons) {
+            if (button.name.equals(name))
+                return button.code;
+        }
+        throw new IllegalArgumentException("Key is not in List: " + name);
+    }
 
+    public String getDeviceId() {
+        return deviceId;
     }
 
     @Override
     public void setControlButtonCode(String name, int code) {
-        controlButtons.put(name, code);
+
     }
 }

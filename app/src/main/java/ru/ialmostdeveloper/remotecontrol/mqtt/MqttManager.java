@@ -29,6 +29,10 @@ public class MqttManager {
         connect();
     }
 
+    public MqttStorage getStorage() {
+        return storage;
+    }
+
     public void publish(String topic, String message) {
         MqttMessage mqttMessage = new MqttMessage(message.getBytes());
         try {
@@ -38,8 +42,10 @@ public class MqttManager {
         }
     }
 
-    private void connect() {
+    public void connect() {
         try {
+            if (client.isConnected())
+                client.close();
             client.connect(connectOptions, null, new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
@@ -58,6 +64,20 @@ public class MqttManager {
                     Log.d("debugtag123", Objects.requireNonNull(exception.getMessage()));
                 }
             });
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setConnectOptions(MqttConnectOptions options) {
+        this.connectOptions = options;
+    }
+
+    public void sendButtonCode(String deviceId, long code) {
+        MqttMessage message = new MqttMessage();
+        message.setPayload(Long.toHexString(code).getBytes());
+        try {
+            client.publish("remoteControl/devices/" + deviceId + "/code", message);
         } catch (MqttException e) {
             e.printStackTrace();
         }

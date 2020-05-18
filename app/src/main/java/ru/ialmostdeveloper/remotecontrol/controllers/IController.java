@@ -1,10 +1,16 @@
 package ru.ialmostdeveloper.remotecontrol.controllers;
 
-import java.util.HashMap;
+import java.util.List;
 
 public interface IController {
-    HashMap<String, Integer> getControlButtons();
-    void setControlButtons(HashMap<String, Integer> controlButtons);
-    int getControlButtonCode(String name);
+
+    List<ControllerButton> getControlButtons();
+
+    String getDeviceId();
+
+    void setControlButtons(List<ControllerButton> controlButtons);
+
+    long getControlButtonCode(String name);
+
     void setControlButtonCode(String name, int code);
 }

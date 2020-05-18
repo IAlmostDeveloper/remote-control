@@ -143,11 +143,11 @@ public class MqttStorage {
             if (file.exists()) {
                 FileInputStream stream = new FileInputStream(file);
                 int i;
-
                 while ((i = stream.read()) != -1) {
                     mqttOptionsRaw.append((char) i);
                 }
-                options = new Gson().fromJson(mqttOptionsRaw.toString(), MqttConnectOptions.class);
+                if (!mqttOptionsRaw.toString().isEmpty())
+                    options = new Gson().fromJson(mqttOptionsRaw.toString(), MqttConnectOptions.class);
             } else {
                 try {
                     file.createNewFile();
@@ -203,7 +203,8 @@ public class MqttStorage {
                 }
                 Type type = new TypeToken<ArrayList<String>>() {
                 }.getType();
-                subscribeTopics = new Gson().fromJson(mqttOptionsRaw.toString(), type);
+                if (!mqttOptionsRaw.toString().isEmpty())
+                    subscribeTopics = new Gson().fromJson(mqttOptionsRaw.toString(), type);
             } else {
                 try {
                     file.createNewFile();
