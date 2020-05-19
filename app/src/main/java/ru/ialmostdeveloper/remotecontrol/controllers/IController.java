@@ -10,6 +10,8 @@ public interface IController {
 
     void setControlButtons(List<ControllerButton> controlButtons);
 
+    void addControllerButton(ControllerButton button);
+
     long getControlButtonCode(String name);
 
     void setControlButtonCode(String name, int code);

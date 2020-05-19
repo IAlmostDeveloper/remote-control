@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import ru.ialmostdeveloper.remotecontrol.controllers.IController;
+import ru.ialmostdeveloper.remotecontrol.controllers.RC5Controller;
 
 public class MqttStorage {
     private Context context;
@@ -90,9 +91,11 @@ public class MqttStorage {
                 while ((i = stream.read()) != -1) {
                     mqttControllersRaw.append((char) i);
                 }
-                Type type = new TypeToken<HashMap<String, IController>>() {
-                }.getType();
-                controllerHashMap = new Gson().fromJson(mqttControllersRaw.toString(), type);
+                if(!mqttControllersRaw.toString().isEmpty()){
+                    Type type = new TypeToken<HashMap<String, RC5Controller>>() {
+                    }.getType();
+                    controllerHashMap = new Gson().fromJson(mqttControllersRaw.toString(), type);
+                }
             } else {
                 try {
                     file.createNewFile();
@@ -109,7 +112,7 @@ public class MqttStorage {
 
     public void writeControllers(HashMap<String, IController> controllerHashMap) {
         File folder = new File(context.getFilesDir(), "mqtt");
-        File file = new File(folder.getAbsolutePath() + "MqttHost.txt");
+        File file = new File(folder.getAbsolutePath() + "MqttControllersList.txt");
         if (!folder.exists()) {
             folder.mkdir();
         }

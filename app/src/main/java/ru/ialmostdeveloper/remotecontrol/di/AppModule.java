@@ -8,7 +8,6 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Singleton;
 
@@ -16,7 +15,6 @@ import dagger.Module;
 import dagger.Provides;
 import ru.ialmostdeveloper.remotecontrol.controllers.ControllerButton;
 import ru.ialmostdeveloper.remotecontrol.controllers.IController;
-import ru.ialmostdeveloper.remotecontrol.controllers.RC5Controller;
 import ru.ialmostdeveloper.remotecontrol.mqtt.MqttManager;
 import ru.ialmostdeveloper.remotecontrol.mqtt.MqttStorage;
 
@@ -46,10 +44,22 @@ class AppModule {
 
     @Provides
     @Singleton
-    HashMap<String, IController> provideControllersList() {
-        HashMap<String, IController> controllersList = new HashMap<>();
-        controllersList.put("RC5", new RC5Controller("1", RC5StandardControls()));
-        return controllersList;
+    HashMap<String, IController> provideControllersList(MqttStorage storage) {
+//        HashMap<String, IController> controllersList = new HashMap<>();
+//        controllersList.put("RC5", new RC5Controller("1", RC5StandardControls()));
+//        return controllersList;
+        return storage.readControllers();
+    }
+
+    @Provides
+    @Singleton
+    HashMap<String, List<ControllerButton>> provideControllerPresets(final List<ControllerButton> RC5controlButtons) {
+        return new HashMap<String, List<ControllerButton>>() {
+            {
+                put("RC5", RC5controlButtons);
+                put("None", new ArrayList<ControllerButton>());
+            }
+        };
     }
 
     @Provides

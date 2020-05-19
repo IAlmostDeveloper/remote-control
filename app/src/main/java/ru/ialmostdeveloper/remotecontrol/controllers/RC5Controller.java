@@ -22,6 +22,11 @@ public class RC5Controller implements IController {
     }
 
     @Override
+    public void addControllerButton(ControllerButton button) {
+        controlButtons.add(button);
+    }
+
+    @Override
     public long getControlButtonCode(String name) {
         for (ControllerButton button : controlButtons) {
             if (button.name.equals(name))
