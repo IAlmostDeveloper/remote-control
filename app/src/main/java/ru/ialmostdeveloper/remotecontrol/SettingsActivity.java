@@ -38,16 +38,16 @@ public class SettingsActivity extends AppCompatActivity {
 
         address.setText(mqttManager.getStorage().readMqttHost());
         MqttConnectOptions options = mqttManager.getStorage().readMqttConnectionOptions();
-        username.setText(options.getUserName());
-        password.setText(new String(options.getPassword()));
+        username.setText(options.getUserName() == null ? "" : options.getUserName());
+        password.setText(options.getPassword() == null ? "" : new String(options.getPassword()));
 
         Button saveSettingsButton = findViewById(R.id.save_button);
         saveSettingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(address.getText().toString().isEmpty()
+                if (address.getText().toString().isEmpty()
                         || username.getText().toString().isEmpty()
-                        || password.getText().toString().isEmpty()){
+                        || password.getText().toString().isEmpty()) {
                     Toast.makeText(getApplicationContext(), "Please, fill all settings", Toast.LENGTH_SHORT).show();
                     return;
                 }
