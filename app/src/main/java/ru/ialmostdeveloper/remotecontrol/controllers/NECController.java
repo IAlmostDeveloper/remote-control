@@ -2,13 +2,12 @@ package ru.ialmostdeveloper.remotecontrol.controllers;
 
 import java.util.List;
 
-public class RC5Controller implements IController {
+public class NECController implements IController {
 
     private List<ControllerButton> controlButtons;
     private String deviceId;
-    private final String className = "RC5Controller";
-
-    public RC5Controller(String deviceId, List<ControllerButton> controlButtons) {
+    private final String className = "NECController";
+    public NECController(String deviceId, List<ControllerButton> controlButtons) {
         this.deviceId = deviceId;
         setControlButtons(controlButtons);
     }

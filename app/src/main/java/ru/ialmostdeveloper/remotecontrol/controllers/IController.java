@@ -2,7 +2,7 @@ package ru.ialmostdeveloper.remotecontrol.controllers;
 
 import java.util.List;
 
-public interface IController {
+public interface IController extends Convertable{
 
     List<ControllerButton> getControlButtons();
 
@@ -11,6 +11,8 @@ public interface IController {
     void setControlButtons(List<ControllerButton> controlButtons);
 
     void addControllerButton(ControllerButton button);
+
+    void removeControllerButton(String name);
 
     long getControlButtonCode(String name);
 

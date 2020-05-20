@@ -3,6 +3,7 @@ package ru.ialmostdeveloper.remotecontrol.mqtt;
 import android.content.Context;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
@@ -17,7 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import ru.ialmostdeveloper.remotecontrol.controllers.IController;
-import ru.ialmostdeveloper.remotecontrol.controllers.RC5Controller;
+import ru.ialmostdeveloper.remotecontrol.controllers.IControllerInterfaceAdapter;
 
 public class MqttStorage {
     private Context context;
@@ -92,9 +93,12 @@ public class MqttStorage {
                     mqttControllersRaw.append((char) i);
                 }
                 if(!mqttControllersRaw.toString().isEmpty()){
-                    Type type = new TypeToken<HashMap<String, RC5Controller>>() {
+                    GsonBuilder builder = new GsonBuilder();
+                    builder.registerTypeAdapter(IController.class, new IControllerInterfaceAdapter<IController>());
+                    Gson gson = builder.create();
+                    Type type = new TypeToken<HashMap<String, IController>>() {
                     }.getType();
-                    controllerHashMap = new Gson().fromJson(mqttControllersRaw.toString(), type);
+                    controllerHashMap = gson.fromJson(mqttControllersRaw.toString(), type);
                 }
             } else {
                 try {

@@ -73,11 +73,11 @@ public class MqttManager {
         this.connectOptions = options;
     }
 
-    public void sendButtonCode(String deviceId, long code) {
+    public void sendButtonCode(String deviceId, String type, long code) {
         MqttMessage message = new MqttMessage();
         message.setPayload(Long.toHexString(code).getBytes());
         try {
-            client.publish("remoteControl/devices/" + deviceId + "/code", message);
+            client.publish("remoteControl/devices/" + deviceId + "/code/" + type, message);
         } catch (MqttException e) {
             e.printStackTrace();
         }

@@ -45,9 +45,6 @@ class AppModule {
     @Provides
     @Singleton
     HashMap<String, IController> provideControllersList(MqttStorage storage) {
-//        HashMap<String, IController> controllersList = new HashMap<>();
-//        controllersList.put("RC5", new RC5Controller("1", RC5StandardControls()));
-//        return controllersList;
         return storage.readControllers();
     }
 
@@ -58,6 +55,7 @@ class AppModule {
             {
                 put("RC5", RC5controlButtons);
                 put("None", new ArrayList<ControllerButton>());
+                put("NEC", new ArrayList<ControllerButton>());
             }
         };
     }

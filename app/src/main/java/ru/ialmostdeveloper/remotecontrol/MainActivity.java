@@ -1,5 +1,7 @@
 package ru.ialmostdeveloper.remotecontrol;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -9,6 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -33,7 +36,6 @@ public class MainActivity extends AppCompatActivity {
 
     Spinner controllersSpinner;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +48,10 @@ public class MainActivity extends AppCompatActivity {
         setControllersSpinner();
         setControlsLayout();
         setAddControllerButton();
+        setApplyDeleteDialog();
+    }
+
+    private void setApplyDeleteDialog() {
     }
 
     private void setSettingsButton() {
@@ -77,27 +83,50 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setControlsLayout() {
-        LinearLayout controlsLayout = findViewById(R.id.buttonsLayout);
+        final LinearLayout controlsLayout = findViewById(R.id.buttonsLayout);
         controlsLayout.removeAllViews();
         LinearLayout.LayoutParams layoutParams =
                 new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         if (controllersList.size() == 0) return;
-            for (final ControllerButton buttonName :
-                    Objects.requireNonNull(controllersList
-                            .get(controllersSpinner.getSelectedItem()))
-                            .getControlButtons()) {
-                Button button = new Button(this);
-                button.setText(buttonName.name);
-                button.setLayoutParams(layoutParams);
-                button.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        mqttManager.sendButtonCode(
-                                controllersList.get(controllersSpinner.getSelectedItem()).getDeviceId(), buttonName.code);
-                    }
-                });
-                controlsLayout.addView(button);
-            }
+        final IController currentController = controllersList
+                .get(controllersSpinner.getSelectedItem());
+        for (final ControllerButton buttonName :
+                Objects.requireNonNull(currentController)
+                        .getControlButtons()) {
+            final Button button = new Button(this);
+            button.setText(buttonName.name);
+            button.setLayoutParams(layoutParams);
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mqttManager.sendButtonCode(currentController.getDeviceId(),
+                            currentController.getClassName(), buttonName.code);
+                }
+            });
+            button.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    new AlertDialog.Builder(MainActivity.this)
+                            .setTitle("Delete button?")
+                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Toast.makeText(getApplicationContext(), buttonName.name, Toast.LENGTH_SHORT).show();
+                                    controlsLayout.removeView(button);
+                                    currentController.removeControllerButton(buttonName.name);
+                                    mqttManager.getStorage().writeControllers(controllersList);
+                                }
+                            })
+                            .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                }
+                            }).create().show();
+                    return false;
+                }
+            });
+            controlsLayout.addView(button);
+        }
         Button addButtonButton = new Button(this);
         addButtonButton.setText("Add button");
         addButtonButton.setLayoutParams(layoutParams);
@@ -129,8 +158,6 @@ public class MainActivity extends AppCompatActivity {
         }
         switch (requestCode) {
             case 0:
-                if (resultCode == RESULT_OK) {
-                }
                 break;
             case 1:
                 setControllersSpinner();

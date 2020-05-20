@@ -17,6 +17,7 @@ import javax.inject.Inject;
 
 import ru.ialmostdeveloper.remotecontrol.controllers.ControllerButton;
 import ru.ialmostdeveloper.remotecontrol.controllers.IController;
+import ru.ialmostdeveloper.remotecontrol.controllers.NECController;
 import ru.ialmostdeveloper.remotecontrol.controllers.RC5Controller;
 import ru.ialmostdeveloper.remotecontrol.di.MyApplication;
 import ru.ialmostdeveloper.remotecontrol.mqtt.MqttManager;
@@ -62,6 +63,11 @@ public class AddControllerActivity extends AppCompatActivity {
                     case "RC5":
                         newController = new RC5Controller(controllerIdInput.getText().toString(),
                                 controllerPresets.get("RC5"));
+                        break;
+
+                    case "NEC":
+                        newController = new NECController(controllerIdInput.getText().toString(),
+                                controllerPresets.get("NEC"));
                         break;
 
                     case "None":

@@ -40,7 +40,6 @@ public class SettingsActivity extends AppCompatActivity {
         MqttConnectOptions options = mqttManager.getStorage().readMqttConnectionOptions();
         username.setText(options.getUserName() == null ? "" : options.getUserName());
         password.setText(options.getPassword() == null ? "" : new String(options.getPassword()));
-
         Button saveSettingsButton = findViewById(R.id.save_button);
         saveSettingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
