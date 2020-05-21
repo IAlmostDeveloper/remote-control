@@ -11,7 +11,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -35,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     MqttManager mqttManager;
 
     Spinner controllersSpinner;
+    ArrayAdapter<String> controllersSpinnerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,8 +67,8 @@ public class MainActivity extends AppCompatActivity {
     private void setControllersSpinner() {
         controllersSpinner = findViewById(R.id.controllersSpinner);
         ArrayList<String> items = new ArrayList<>(controllersList.keySet());
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
-        controllersSpinner.setAdapter(adapter);
+        controllersSpinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
+        controllersSpinner.setAdapter(controllersSpinnerAdapter);
         controllersSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -78,6 +78,29 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
 
+            }
+        });
+        controllersSpinner.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                new AlertDialog.Builder(MainActivity.this)
+                        .setTitle("Delete controller?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                String currentControllerName = controllersSpinner.getSelectedItem().toString();
+                                controllersSpinnerAdapter.remove(currentControllerName);
+                                controllersList.remove(currentControllerName);
+                                mqttManager.getStorage().writeControllers(controllersList);
+                                setControlsLayout();
+                            }
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        }).create().show();
+                return false;
             }
         });
     }
@@ -111,7 +134,6 @@ public class MainActivity extends AppCompatActivity {
                             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    Toast.makeText(getApplicationContext(), buttonName.name, Toast.LENGTH_SHORT).show();
                                     controlsLayout.removeView(button);
                                     currentController.removeControllerButton(buttonName.name);
                                     mqttManager.getStorage().writeControllers(controllersList);
@@ -133,8 +155,10 @@ public class MainActivity extends AppCompatActivity {
         addButtonButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivityForResult(new Intent(getApplicationContext(),
-                        AddControllerButtonActivity.class), 2);
+                Intent intent = new Intent(getApplicationContext(),
+                        AddControllerButtonActivity.class)
+                        .putExtra("deviceId", currentController.getDeviceId());
+                startActivityForResult(intent, 2);
             }
         });
         controlsLayout.addView(addButtonButton);

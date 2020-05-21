@@ -33,6 +33,10 @@ public class MqttManager {
         return storage;
     }
 
+    public MqttAndroidClient getClient(){
+        return client;
+    }
+
     public void publish(String topic, String message) {
         MqttMessage mqttMessage = new MqttMessage(message.getBytes());
         try {

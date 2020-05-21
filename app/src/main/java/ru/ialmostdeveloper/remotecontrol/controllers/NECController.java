@@ -49,10 +49,6 @@ public class NECController implements IController {
         return deviceId;
     }
 
-    @Override
-    public void setControlButtonCode(String name, int code) {
-
-    }
 
     @Override
     public String getClassName() {

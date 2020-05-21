@@ -51,11 +51,6 @@ public class RC5Controller implements IController {
     }
 
     @Override
-    public void setControlButtonCode(String name, int code) {
-
-    }
-
-    @Override
     public String getClassName() {
         return className;
     }

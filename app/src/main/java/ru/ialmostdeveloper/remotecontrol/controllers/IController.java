@@ -15,6 +15,4 @@ public interface IController extends Convertable{
     void removeControllerButton(String name);
 
     long getControlButtonCode(String name);
-
-    void setControlButtonCode(String name, int code);
 }

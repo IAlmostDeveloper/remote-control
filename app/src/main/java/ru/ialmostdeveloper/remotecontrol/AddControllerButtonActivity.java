@@ -8,6 +8,12 @@ import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
+import org.eclipse.paho.client.mqttv3.MqttCallback;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.json.JSONObject;
+
 import java.util.HashMap;
 
 import javax.inject.Inject;
@@ -35,7 +41,50 @@ public class AddControllerButtonActivity extends AppCompatActivity {
                 .inject(this);
 
         setAddButton();
+        setReceiverButton();
         setInputs();
+    }
+
+    private void setReceiverButton() {
+        Button receiverButton = findViewById(R.id.getCodeFromReceiverButton);
+        receiverButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String requestTopic = "remoteControl/devices/" + getIntent().getStringExtra("deviceId") + "/receive";
+                String responseTopic = mqttManager.getClient().getClientId();
+                try {
+                    mqttManager.getClient().subscribe(responseTopic, 0);
+                } catch (MqttException e) {
+                    e.printStackTrace();
+                }
+                mqttManager.getClient().setCallback(new MqttCallback() {
+                    @Override
+                    public void connectionLost(Throwable cause) {
+
+                    }
+
+                    @Override
+                    public void messageArrived(String topic, MqttMessage message) throws Exception {
+                        JSONObject obj = new JSONObject(new String(message.getPayload()));
+                        long value = Long.parseLong(obj.get("code").toString());
+                        String receivedCode = Long.toHexString(value);
+                        buttonCodeInput.setText("0x" + receivedCode);
+                    }
+
+                    @Override
+                    public void deliveryComplete(IMqttDeliveryToken token) {
+
+                    }
+                });
+                MqttMessage responseMessage = new MqttMessage();
+                responseMessage.setPayload(responseTopic.getBytes());
+                try {
+                    mqttManager.getClient().publish(requestTopic, responseMessage);
+                } catch (MqttException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     private void setInputs() {
