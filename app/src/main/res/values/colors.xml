@@ -2,5 +2,10 @@
 <resources>
     <color name="colorPrimary">#6200EE</color>
     <color name="colorPrimaryDark">#3700B3</color>
-    <color name="colorAccent">#03DAC5</color>
+    <color name="colorAccent">#3B028B</color>
+    <color name="colorAddButton">#6200FF</color>
+    <color name="colorButtonBack">#4D01BA</color>
+    <color name="colorControllerButtonBack">#6000EC</color>
+    <color name="colorText">#FFFA00</color>
+    <color name="colorBackground">#2C006D</color>
 </resources>

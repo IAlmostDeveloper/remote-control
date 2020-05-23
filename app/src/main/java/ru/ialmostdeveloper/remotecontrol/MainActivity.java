@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
     private void setControllersSpinner() {
         controllersSpinner = findViewById(R.id.controllersSpinner);
         ArrayList<String> items = new ArrayList<>(controllersList.keySet());
-        controllersSpinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
+        controllersSpinnerAdapter = new ArrayAdapter<>(this, R.layout.spinner_item, items);
         controllersSpinner.setAdapter(controllersSpinnerAdapter);
         controllersSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
         controllersSpinner.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                new AlertDialog.Builder(MainActivity.this)
+                new AlertDialog.Builder(MainActivity.this, android.R.style.Theme_Material_Dialog_Alert)
                         .setTitle("Delete controller?")
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
@@ -108,8 +108,10 @@ public class MainActivity extends AppCompatActivity {
     private void setControlsLayout() {
         final LinearLayout controlsLayout = findViewById(R.id.buttonsLayout);
         controlsLayout.removeAllViews();
+        controlsLayout.setBackgroundColor(getResources().getColor(R.color.colorAccent));
         LinearLayout.LayoutParams layoutParams =
                 new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        layoutParams.setMargins(5,5,5,5);
         if (controllersList.size() == 0) return;
         final IController currentController = controllersList
                 .get(controllersSpinner.getSelectedItem());
@@ -119,6 +121,8 @@ public class MainActivity extends AppCompatActivity {
             final Button button = new Button(this);
             button.setText(buttonName.name);
             button.setLayoutParams(layoutParams);
+            button.setBackgroundResource(R.drawable.custombutton);
+            button.setTextColor(getResources().getColor(R.color.colorText));
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -129,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
             button.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    new AlertDialog.Builder(MainActivity.this)
+                    new AlertDialog.Builder(MainActivity.this, android.R.style.Theme_Material_Dialog_Alert)
                             .setTitle("Delete button?")
                             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                 @Override
@@ -149,9 +153,7 @@ public class MainActivity extends AppCompatActivity {
             });
             controlsLayout.addView(button);
         }
-        Button addButtonButton = new Button(this);
-        addButtonButton.setText("Add button");
-        addButtonButton.setLayoutParams(layoutParams);
+        Button addButtonButton = findViewById(R.id.addButtonButton);
         addButtonButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -161,7 +163,6 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(intent, 2);
             }
         });
-        controlsLayout.addView(addButtonButton);
     }
 
     private void setAddControllerButton() {

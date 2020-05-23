@@ -4,41 +4,49 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/colorAccent"
     tools:context="ru.ialmostdeveloper.remotecontrol.SettingsActivity">
 
     <TextView
+        style="@style/TextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="MQTT broker address:" />
 
     <EditText
         android:id="@+id/mqttBrokerAddress_input"
+        style="@style/EditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
     <TextView
+        style="@style/TextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Username:" />
 
     <EditText
         android:id="@+id/username_input"
+        style="@style/EditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
     <TextView
+        style="@style/TextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Password:" />
 
     <EditText
         android:id="@+id/password_input"
+        style="@style/EditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="textPassword" />
 
     <Button
         android:id="@+id/save_button"
+        style="@style/Button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Save" />

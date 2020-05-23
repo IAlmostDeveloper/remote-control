@@ -86,7 +86,7 @@ public class AddControllerActivity extends AppCompatActivity {
     private void setControllersSpinner() {
         controllerPresetsSpinner = findViewById(R.id.controllerPresetsSpinner);
         ArrayList<String> items = new ArrayList<>(controllerPresets.keySet());
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.spinner_item, items);
         controllerPresetsSpinner.setAdapter(adapter);
     }
 }

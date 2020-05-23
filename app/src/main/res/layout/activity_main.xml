@@ -6,26 +6,32 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/colorAccent"
     tools:context=".MainActivity">
 
-    <Button
-        android:id="@+id/settingsBtn"
+    <TextView
+        android:id="@+id/controllersSpinnerLabel"
+        style="@style/TextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="settings"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:text="Select controller:"
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <Spinner
         android:id="@+id/controllersSpinner"
+        style="@style/Spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:drawable/btn_dropdown"
         android:spinnerMode="dropdown"
-        app:layout_constraintTop_toBottomOf="@id/settingsBtn"/>
+        app:layout_constraintTop_toBottomOf="@id/controllersSpinnerLabel"/>
 
     <ScrollView
+        android:id="@+id/buttonsScrollView"
         android:layout_width="match_parent"
         android:layout_height="300dp"
+        android:layout_marginTop="20dp"
+        android:scrollbarStyle="insideOverlay"
         app:layout_constraintTop_toBottomOf="@id/controllersSpinner">
         <LinearLayout
             android:id="@+id/buttonsLayout"
@@ -35,10 +41,34 @@
     </ScrollView>
 
     <Button
+        android:id="@+id/addButtonButton"
+        style="@style/Button"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:text="Add button"
+        android:drawableTop="@drawable/ic_action_add"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"/>
+
+    <Button
         android:id="@+id/addControllerButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        style="@style/Button"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:text="Add controller"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        android:drawableTop="@drawable/ic_action_controller"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/addButtonButton"
+        app:layout_constraintRight_toLeftOf="@id/settingsBtn"/>
+
+    <Button
+        android:id="@+id/settingsBtn"
+        style="@style/Button"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:text="settings"
+        android:drawableTop="@drawable/ic_action_settings"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
