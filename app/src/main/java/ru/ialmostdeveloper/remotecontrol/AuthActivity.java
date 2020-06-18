@@ -9,21 +9,8 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.gson.Gson;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-
 import javax.inject.Inject;
 
-import okhttp3.MediaType;
-import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Response;
-import retrofit2.Retrofit;
 import ru.ialmostdeveloper.remotecontrol.di.MyApplication;
 import ru.ialmostdeveloper.remotecontrol.mqtt.Storage;
 
@@ -31,17 +18,9 @@ public class AuthActivity extends AppCompatActivity {
 
     @Inject
     Storage storage;
+
     @Inject
     RequestsManager requestsManager;
-
-    @Inject
-    Gson gson;
-
-    @Inject
-    Retrofit retrofit;
-
-    @Inject
-    APIService service;
 
     EditText loginInput;
     EditText passwordInput;
@@ -80,33 +59,8 @@ public class AuthActivity extends AppCompatActivity {
                             Toast.LENGTH_SHORT).show();
                     return;
                 }
-                JSONObject requestBody = new JSONObject();
-
-                try {
-                    requestBody.put("login", login);
-                    requestBody.put("password", password);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                RequestBody bodyRequest = RequestBody.create(MediaType.parse("application/json"), requestBody.toString());
-                Call<ResponseBody> call = service.register(bodyRequest);
-
-                try {
-                    Response<ResponseBody> response = call.execute();
-
-                    if(response.code()==200) {
-                        String bodyraw = response.body().string();
-                        JSONObject responseBody = new JSONObject(bodyraw);
-                        String error = responseBody.get("error").toString();
-                        if(error.equals("")){
-                            setResult(RESULT_OK);
-                        }
-                        else
-                            Toast.makeText(getApplicationContext(), error, Toast.LENGTH_SHORT).show();
-                    }
-                } catch (IOException | JSONException e) {
-                    e.printStackTrace();
-                }
+                if(!requestsManager.register(login, password))
+                    Toast.makeText(getApplicationContext(), "User is already registered", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -123,35 +77,12 @@ public class AuthActivity extends AppCompatActivity {
                             Toast.LENGTH_SHORT).show();
                     return;
                 }
-                JSONObject requestBody = new JSONObject();
-
-                try {
-                    requestBody.put("login", login);
-                    requestBody.put("password", password);
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                if(requestsManager.auth(login, password)){
+                    setResult(RESULT_OK);
+                    finish();
                 }
-                RequestBody bodyRequest = RequestBody.create(MediaType.parse("application/json"), requestBody.toString());
-                Call<ResponseBody> call = service.auth(bodyRequest);
-
-                try {
-                    Response<ResponseBody> response = call.execute();
-
-                    if(response.code()==200) {
-                        String bodyraw = response.body().string();
-                        JSONObject responseBody = new JSONObject(bodyraw);
-                        String token = responseBody.get("token").toString();
-                        String error = responseBody.get("error").toString();
-                        if(error.equals("")){
-                            setResult(RESULT_OK);
-                            finish();
-                        }
-                        else
-                            Toast.makeText(getApplicationContext(), error, Toast.LENGTH_SHORT).show();
-                    }
-                } catch (IOException | JSONException e) {
-                    e.printStackTrace();
-                }
+                else
+                    Toast.makeText(getApplicationContext(), "Incorrect user data", Toast.LENGTH_SHORT).show();
             }
         });
     }

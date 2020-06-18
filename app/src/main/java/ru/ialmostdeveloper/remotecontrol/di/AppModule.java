@@ -48,6 +48,12 @@ class AppModule {
 
     @Provides
     @Singleton
+    RequestsManager provideRequestsManager(APIService service, Session session){
+        return new RequestsManager(service, session);
+    }
+
+    @Provides
+    @Singleton
     Retrofit provideRetrofit(){
         return new Retrofit.Builder()
                 .addConverterFactory(GsonConverterFactory.create())
@@ -71,12 +77,6 @@ class AppModule {
     @Singleton
     Session provideSession(){
         return new Session();
-    }
-
-    @Provides
-    @Singleton
-    RequestsManager provideRequestsManager(Session session){
-        return new RequestsManager(session);
     }
 
     @Provides

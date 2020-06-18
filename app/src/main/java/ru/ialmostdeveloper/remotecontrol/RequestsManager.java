@@ -1,79 +1,102 @@
 package ru.ialmostdeveloper.remotecontrol;
 
-import android.os.AsyncTask;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
-public class RequestsManager{
-    Session session;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Response;
 
-    public RequestsManager(Session session) {
+public class RequestsManager {
+    private APIService service;
+    private Session session;
+
+    public RequestsManager(APIService service, Session session) {
+        this.service = service;
         this.session = session;
     }
 
-    public void AddScriptToDB(String name, String userId, String sequence){
+    public boolean auth(String login, String password) {
+        JSONObject requestBody = new JSONObject();
 
-    }
-
-    public void ExecuteScript(String id){
-
-    }
-
-    public void SendCode(int id, String code, String encoding){
-        new SendCodeTask().execute(String.valueOf(id), code, encoding);
-    }
-
-    private class SendCodeTask extends AsyncTask<String, String, String>{
-
-        @Override
-        protected String doInBackground(String... strings) {
-            String myURL = "https://ik.remzalp.ru/send";
-            String body = null;
-            try {
-                URL url = new URL(myURL);
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setRequestMethod("POST");
-                conn.setDoOutput(true);
-                conn.setDoInput(true);
-                conn.setRequestProperty("Content-Type", "application/json");
-                conn.setRequestProperty("Accept", "application/json");
-                JSONObject requestBody   = new JSONObject();
-                requestBody.put("id", Integer.valueOf(strings[0]));
-                requestBody.put("code", strings[1]);
-                requestBody.put("encoding", strings[2]);
-                OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
-                wr.write(requestBody.toString());
-                wr.flush();
-                conn.connect();
-                body = RequestsManager.getJSONBodyFromResponse(conn);
-            } catch (IOException | JSONException e) {
-                e.printStackTrace();
-            }
-            return "";
+        try {
+            requestBody.put("login", login);
+            requestBody.put("password", password);
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
+        RequestBody bodyRequest = RequestBody.create(MediaType.parse("application/json"), requestBody.toString());
+        Call<ResponseBody> call = service.auth(bodyRequest);
+
+        try {
+            Response<ResponseBody> response = call.execute();
+
+            if(response.code()==200) {
+                String bodyraw = response.body().string();
+                JSONObject responseBody = new JSONObject(bodyraw);
+                String token = responseBody.get("token").toString();
+                String error = responseBody.get("error").toString();
+                return error.equals("");
+            }
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
-    private static String getJSONBodyFromResponse(HttpURLConnection conn) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        int HttpResult = conn.getResponseCode();
-        if (HttpResult == HttpURLConnection.HTTP_OK) {
-            BufferedReader br = new BufferedReader(
-                    new InputStreamReader(conn.getInputStream(), "utf-8"));
-            String line = null;
-            while ((line = br.readLine()) != null) {
-                sb.append(line).append("\n");
-            }
-            br.close();
-        } else {
+    public boolean register(String login, String password) {
+        JSONObject requestBody = new JSONObject();
+
+        try {
+            requestBody.put("login", login);
+            requestBody.put("password", password);
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
-        return sb.toString();
+        RequestBody bodyRequest = RequestBody.create(MediaType.parse("application/json"), requestBody.toString());
+        Call<ResponseBody> call = service.register(bodyRequest);
+
+        try {
+            Response<ResponseBody> response = call.execute();
+
+            if(response.code()==200) {
+                String bodyraw = response.body().string();
+                JSONObject responseBody = new JSONObject(bodyraw);
+                String error = responseBody.get("error").toString();
+                return error.equals("");
+            }
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean send(int id, String code, String encoding) {
+        JSONObject requestBody = new JSONObject();
+
+        try {
+            requestBody.put("id", id);
+            requestBody.put("code", code);
+            requestBody.put("encoding", encoding);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody bodyRequest = RequestBody.create(MediaType.parse("application/json"), requestBody.toString());
+        Call<ResponseBody> call = service.send(bodyRequest);
+
+        try {
+            Response<ResponseBody> response = call.execute();
+
+            if (response.code() == 200) {
+                return true;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

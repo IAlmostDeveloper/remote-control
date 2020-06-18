@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -11,6 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -48,7 +50,8 @@ public class MainActivity extends AppCompatActivity {
         ((MyApplication) getApplication())
                 .getAppComponent()
                 .inject(this);
-
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
         setSettingsButton();
         setControllersSpinner();
         setControlsLayout();
@@ -131,10 +134,9 @@ public class MainActivity extends AppCompatActivity {
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    System.out.println("Sending code...");
-                    requestsManager.SendCode(Integer.parseInt(currentController.getDeviceId()),
-                            String.valueOf(buttonName.code), currentController.getClassName());
-
+                    if(!requestsManager.send(Integer.parseInt(currentController.getDeviceId()),
+                            String.valueOf(buttonName.code), currentController.getClassName()))
+                        Toast.makeText(getApplicationContext(), "Error occured", Toast.LENGTH_SHORT).show();
                 }
             });
             button.setOnLongClickListener(new View.OnLongClickListener() {
