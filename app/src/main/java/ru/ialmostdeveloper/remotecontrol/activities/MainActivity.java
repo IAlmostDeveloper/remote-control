@@ -128,6 +128,9 @@ public class MainActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     mqttManager.sendButtonCode(currentController.getDeviceId(),
                             currentController.getClassName(), buttonName.code);
+                    new RequestsManager(new Session("david", "12345", ""))
+                            .Auth("david", "12345");
+
                 }
             });
             button.setOnLongClickListener(new View.OnLongClickListener() {

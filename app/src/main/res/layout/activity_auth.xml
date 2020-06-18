@@ -5,16 +5,16 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/colorAccent"
-    tools:context=".activities.AddControllerActivity">
+    tools:context="ru.ialmostdeveloper.remotecontrol.AuthActivity">
 
     <TextView
         style="@style/TextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Controller name:" />
+        android:text="Login:" />
 
     <EditText
-        android:id="@+id/addControllerNameInput"
+        android:id="@+id/login_input"
         style="@style/EditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
@@ -23,31 +23,27 @@
         style="@style/TextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Controller id:" />
+        android:text="Password:" />
 
     <EditText
-        android:id="@+id/addControllerIdInput"
+        android:id="@+id/password_input"
         style="@style/EditText"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <TextView
-        style="@style/TextView"
-        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Controller type:"/>
-
-    <Spinner
-        android:id="@+id/controllerPresetsSpinner"
-        style="@style/Spinner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:inputType="textPassword" />
 
     <Button
-        android:id="@+id/addControllerApply"
+        android:id="@+id/signIn_btn"
         style="@style/Button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Add" />
+        android:text="Sign in" />
+
+    <Button
+        android:id="@+id/signUp_btn"
+        style="@style/Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Sign up" />
 
 </LinearLayout>
