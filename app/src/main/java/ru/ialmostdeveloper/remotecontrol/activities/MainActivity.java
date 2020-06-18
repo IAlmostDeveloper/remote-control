@@ -1,4 +1,4 @@
-package ru.ialmostdeveloper.remotecontrol;
+package ru.ialmostdeveloper.remotecontrol.activities;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -21,17 +21,22 @@ import java.util.Objects;
 
 import javax.inject.Inject;
 
+import ru.ialmostdeveloper.remotecontrol.AuthActivity;
+import ru.ialmostdeveloper.remotecontrol.R;
+import ru.ialmostdeveloper.remotecontrol.RequestsManager;
 import ru.ialmostdeveloper.remotecontrol.controllers.ControllerButton;
 import ru.ialmostdeveloper.remotecontrol.controllers.IController;
 import ru.ialmostdeveloper.remotecontrol.di.MyApplication;
-import ru.ialmostdeveloper.remotecontrol.mqtt.MqttManager;
+import ru.ialmostdeveloper.remotecontrol.mqtt.Storage;
 
 
 public class MainActivity extends AppCompatActivity {
     @Inject
     HashMap<String, IController> controllersList;
     @Inject
-    MqttManager mqttManager;
+    Storage storage;
+    @Inject
+    RequestsManager requestsManager;
 
     Spinner controllersSpinner;
     ArrayAdapter<String> controllersSpinnerAdapter;
@@ -59,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
         settingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivityForResult(new Intent(getApplicationContext(), SettingsActivity.class), 0);
+                startActivityForResult(new Intent(getApplicationContext(), AuthActivity.class), 0);
             }
         });
     }
@@ -91,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
                                 String currentControllerName = controllersSpinner.getSelectedItem().toString();
                                 controllersSpinnerAdapter.remove(currentControllerName);
                                 controllersList.remove(currentControllerName);
-                                mqttManager.getStorage().writeControllers(controllersList);
+                                storage.writeControllers(controllersList);
                                 setControlsLayout();
                             }
                         })
@@ -111,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
         controlsLayout.setBackgroundColor(getResources().getColor(R.color.colorAccent));
         LinearLayout.LayoutParams layoutParams =
                 new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        layoutParams.setMargins(5,5,5,5);
+        layoutParams.setMargins(5, 5, 5, 5);
         if (controllersList.size() == 0) return;
         final IController currentController = controllersList
                 .get(controllersSpinner.getSelectedItem());
@@ -126,10 +131,9 @@ public class MainActivity extends AppCompatActivity {
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mqttManager.sendButtonCode(currentController.getDeviceId(),
-                            currentController.getClassName(), buttonName.code);
-                    new RequestsManager(new Session("david", "12345", ""))
-                            .Auth("david", "12345");
+                    System.out.println("Sending code...");
+                    requestsManager.SendCode(Integer.parseInt(currentController.getDeviceId()),
+                            String.valueOf(buttonName.code), currentController.getClassName());
 
                 }
             });
@@ -143,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
                                 public void onClick(DialogInterface dialog, int which) {
                                     controlsLayout.removeView(button);
                                     currentController.removeControllerButton(buttonName.name);
-                                    mqttManager.getStorage().writeControllers(controllersList);
+                                    storage.writeControllers(controllersList);
                                 }
                             })
                             .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -199,7 +203,7 @@ public class MainActivity extends AppCompatActivity {
                             .getSelectedItem()
                             .toString()))
                             .addControllerButton(new ControllerButton(buttonName, buttonCode));
-                    mqttManager.getStorage().writeControllers(controllersList);
+                    storage.writeControllers(controllersList);
                     setControlsLayout();
                 }
                 break;

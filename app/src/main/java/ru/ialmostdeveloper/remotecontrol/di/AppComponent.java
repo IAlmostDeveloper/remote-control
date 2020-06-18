@@ -6,10 +6,10 @@ import javax.inject.Singleton;
 
 import dagger.BindsInstance;
 import dagger.Component;
-import ru.ialmostdeveloper.remotecontrol.AddControllerActivity;
-import ru.ialmostdeveloper.remotecontrol.AddControllerButtonActivity;
-import ru.ialmostdeveloper.remotecontrol.MainActivity;
-import ru.ialmostdeveloper.remotecontrol.SettingsActivity;
+import ru.ialmostdeveloper.remotecontrol.activities.AddControllerActivity;
+import ru.ialmostdeveloper.remotecontrol.activities.AddControllerButtonActivity;
+import ru.ialmostdeveloper.remotecontrol.AuthActivity;
+import ru.ialmostdeveloper.remotecontrol.activities.MainActivity;
 
 @Singleton
 @Component(modules = AppModule.class)
@@ -17,7 +17,7 @@ public interface AppComponent {
 
     void inject(MainActivity mainActivity);
 
-    void inject(SettingsActivity settingsActivity);
+    void inject(AuthActivity authActivity);
 
     void inject(AddControllerActivity addControllerActivity);
 

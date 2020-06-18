@@ -14,12 +14,12 @@ import java.util.Objects;
 
 public class MqttManager {
 
-    private MqttStorage storage;
+    private Storage storage;
     private MqttAndroidClient client;
     private MqttConnectOptions connectOptions;
     private List<String> subscribeTopicsList;
 
-    public MqttManager(MqttStorage storage, MqttAndroidClient client,
+    public MqttManager(Storage storage, MqttAndroidClient client,
                        MqttConnectOptions connectOptions, List<String> topicsList) {
         this.storage = storage;
         this.subscribeTopicsList = topicsList;
@@ -29,7 +29,7 @@ public class MqttManager {
         connect();
     }
 
-    public MqttStorage getStorage() {
+    public Storage getStorage() {
         return storage;
     }
 

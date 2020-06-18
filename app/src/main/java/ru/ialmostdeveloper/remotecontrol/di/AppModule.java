@@ -2,8 +2,8 @@ package ru.ialmostdeveloper.remotecontrol.di;
 
 import android.content.Context;
 
-import org.eclipse.paho.android.service.MqttAndroidClient;
-import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,10 +13,14 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+import ru.ialmostdeveloper.remotecontrol.APIService;
+import ru.ialmostdeveloper.remotecontrol.RequestsManager;
+import ru.ialmostdeveloper.remotecontrol.Session;
 import ru.ialmostdeveloper.remotecontrol.controllers.ControllerButton;
 import ru.ialmostdeveloper.remotecontrol.controllers.IController;
-import ru.ialmostdeveloper.remotecontrol.mqtt.MqttManager;
-import ru.ialmostdeveloper.remotecontrol.mqtt.MqttStorage;
+import ru.ialmostdeveloper.remotecontrol.mqtt.Storage;
 
 @Module
 class AppModule {
@@ -37,14 +41,47 @@ class AppModule {
         controls.add(new ControllerButton("Channel8", 0x808));
         controls.add(new ControllerButton("Channel9", 0x809));
         controls.add(new ControllerButton("Channel0", 0x800));
-        controls.add(new ControllerButton("Previous", 0x820));
-        controls.add(new ControllerButton("Next", 0x821));
+        controls.add(new ControllerButton("Previous", 0x821));
+        controls.add(new ControllerButton("Next", 0x820));
         return controls;
     }
 
     @Provides
     @Singleton
-    HashMap<String, IController> provideControllersList(MqttStorage storage) {
+    Retrofit provideRetrofit(){
+        return new Retrofit.Builder()
+                .addConverterFactory(GsonConverterFactory.create())
+                .baseUrl("https://ik.remzalp.ru")
+                .build();
+    }
+
+    @Provides
+    @Singleton
+    Gson provideGson(){
+        return new GsonBuilder().create();
+    }
+
+    @Provides
+    @Singleton
+    APIService provideAPIService(Retrofit retrofit){
+        return retrofit.create(APIService.class);
+    }
+
+    @Provides
+    @Singleton
+    Session provideSession(){
+        return new Session();
+    }
+
+    @Provides
+    @Singleton
+    RequestsManager provideRequestsManager(Session session){
+        return new RequestsManager(session);
+    }
+
+    @Provides
+    @Singleton
+    HashMap<String, IController> provideControllersList(Storage storage) {
         return storage.readControllers();
     }
 
@@ -67,38 +104,9 @@ class AppModule {
     }
 
     @Provides
-    String provideMqttHost(MqttStorage storage) {
-        return storage.readMqttHost();
-    }
-
-    @Provides
     @Singleton
-    MqttAndroidClient provideMqttClient(Context context, String mqttHost) {
-        return new MqttAndroidClient(context,
-                mqttHost, String.valueOf(System.currentTimeMillis()));
+    Storage provideStorage(Context context) {
+        return new Storage(context);
     }
 
-    @Provides
-    @Singleton
-    MqttConnectOptions provideMqttConnectOptions(MqttStorage storage) {
-        return storage.readMqttConnectionOptions();
-    }
-
-    @Provides
-    @Singleton
-    List<String> provideMqttSubscribeTopicsList(MqttStorage storage) {
-        return storage.readMqttSubscribeTopicsList();
-    }
-
-    @Provides
-    @Singleton
-    MqttStorage provideMqttStorage(Context context) {
-        return new MqttStorage(context);
-    }
-
-    @Provides
-    MqttManager provideMqttManager(MqttStorage mqttStorage, MqttAndroidClient mqttClient, MqttConnectOptions mqttConnectOptions,
-                                   List<String> mqttSubscribeTopicsList) {
-        return new MqttManager(mqttStorage, mqttClient, mqttConnectOptions, mqttSubscribeTopicsList);
-    }
 }

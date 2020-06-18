@@ -1,4 +1,4 @@
-package ru.ialmostdeveloper.remotecontrol;
+package ru.ialmostdeveloper.remotecontrol.activities;
 
 import android.os.Bundle;
 import android.view.View;
@@ -15,19 +15,20 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import ru.ialmostdeveloper.remotecontrol.R;
 import ru.ialmostdeveloper.remotecontrol.controllers.ControllerButton;
 import ru.ialmostdeveloper.remotecontrol.controllers.IController;
 import ru.ialmostdeveloper.remotecontrol.controllers.NECController;
 import ru.ialmostdeveloper.remotecontrol.controllers.RC5Controller;
 import ru.ialmostdeveloper.remotecontrol.di.MyApplication;
-import ru.ialmostdeveloper.remotecontrol.mqtt.MqttManager;
+import ru.ialmostdeveloper.remotecontrol.mqtt.Storage;
 
 public class AddControllerActivity extends AppCompatActivity {
 
     @Inject
-    HashMap<String, IController> controllersList;
+    Storage storage;
     @Inject
-    MqttManager mqttManager;
+    HashMap<String, IController> controllersList;
     @Inject
     HashMap<String, List<ControllerButton>> controllerPresets;
 
@@ -76,7 +77,7 @@ public class AddControllerActivity extends AppCompatActivity {
                         break;
                 }
                 controllersList.put(controllerNameInput.getText().toString(), newController);
-                mqttManager.getStorage().writeControllers(controllersList);
+                storage.writeControllers(controllersList);
                 setResult(RESULT_OK);
                 finish();
             }

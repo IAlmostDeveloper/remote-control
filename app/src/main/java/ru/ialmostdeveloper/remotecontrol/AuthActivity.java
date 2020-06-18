@@ -1,6 +1,7 @@
-package ru.ialmostdeveloper.remotecontrol.activities;
+package ru.ialmostdeveloper.remotecontrol;
 
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -9,13 +10,20 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 
 import javax.inject.Inject;
 
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Response;
 import retrofit2.Retrofit;
-import ru.ialmostdeveloper.remotecontrol.R;
-import ru.ialmostdeveloper.remotecontrol.RequestsManager;
 import ru.ialmostdeveloper.remotecontrol.di.MyApplication;
 import ru.ialmostdeveloper.remotecontrol.mqtt.Storage;
 
@@ -26,9 +34,14 @@ public class AuthActivity extends AppCompatActivity {
     @Inject
     RequestsManager requestsManager;
 
-    private Gson gson;
+    @Inject
+    Gson gson;
 
-    private Retrofit retrofit;
+    @Inject
+    Retrofit retrofit;
+
+    @Inject
+    APIService service;
 
     EditText loginInput;
     EditText passwordInput;
@@ -37,11 +50,14 @@ public class AuthActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth);
+
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
         ((MyApplication) getApplication())
                 .getAppComponent()
                 .inject(this);
-        gson = new GsonBuilder().create();
-        retrofit = new Retrofit().Builder
+
         setInputFields();
         setSignInButton();
         setSignUpButton();
@@ -64,7 +80,33 @@ public class AuthActivity extends AppCompatActivity {
                             Toast.LENGTH_SHORT).show();
                     return;
                 }
-                requestsManager.Register(login, password);
+                JSONObject requestBody = new JSONObject();
+
+                try {
+                    requestBody.put("login", login);
+                    requestBody.put("password", password);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                RequestBody bodyRequest = RequestBody.create(MediaType.parse("application/json"), requestBody.toString());
+                Call<ResponseBody> call = service.register(bodyRequest);
+
+                try {
+                    Response<ResponseBody> response = call.execute();
+
+                    if(response.code()==200) {
+                        String bodyraw = response.body().string();
+                        JSONObject responseBody = new JSONObject(bodyraw);
+                        String error = responseBody.get("error").toString();
+                        if(error.equals("")){
+                            setResult(RESULT_OK);
+                        }
+                        else
+                            Toast.makeText(getApplicationContext(), error, Toast.LENGTH_SHORT).show();
+                    }
+                } catch (IOException | JSONException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
@@ -81,7 +123,35 @@ public class AuthActivity extends AppCompatActivity {
                             Toast.LENGTH_SHORT).show();
                     return;
                 }
-                requestsManager.Auth(login, password);
+                JSONObject requestBody = new JSONObject();
+
+                try {
+                    requestBody.put("login", login);
+                    requestBody.put("password", password);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                RequestBody bodyRequest = RequestBody.create(MediaType.parse("application/json"), requestBody.toString());
+                Call<ResponseBody> call = service.auth(bodyRequest);
+
+                try {
+                    Response<ResponseBody> response = call.execute();
+
+                    if(response.code()==200) {
+                        String bodyraw = response.body().string();
+                        JSONObject responseBody = new JSONObject(bodyraw);
+                        String token = responseBody.get("token").toString();
+                        String error = responseBody.get("error").toString();
+                        if(error.equals("")){
+                            setResult(RESULT_OK);
+                            finish();
+                        }
+                        else
+                            Toast.makeText(getApplicationContext(), error, Toast.LENGTH_SHORT).show();
+                    }
+                } catch (IOException | JSONException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
