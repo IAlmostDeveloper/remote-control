@@ -66,7 +66,7 @@
         style="@style/Button"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:text="settings"
+        android:text="logout"
         android:drawableTop="@drawable/ic_action_settings"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"/>

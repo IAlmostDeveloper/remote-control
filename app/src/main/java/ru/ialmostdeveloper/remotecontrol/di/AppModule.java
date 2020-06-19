@@ -75,8 +75,8 @@ class AppModule {
 
     @Provides
     @Singleton
-    Session provideSession(){
-        return new Session();
+    Session provideSession(Storage storage){
+        return storage.readSession();
     }
 
     @Provides

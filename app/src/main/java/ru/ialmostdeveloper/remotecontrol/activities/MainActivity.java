@@ -26,6 +26,7 @@ import javax.inject.Inject;
 import ru.ialmostdeveloper.remotecontrol.AuthActivity;
 import ru.ialmostdeveloper.remotecontrol.R;
 import ru.ialmostdeveloper.remotecontrol.RequestsManager;
+import ru.ialmostdeveloper.remotecontrol.Session;
 import ru.ialmostdeveloper.remotecontrol.controllers.ControllerButton;
 import ru.ialmostdeveloper.remotecontrol.controllers.IController;
 import ru.ialmostdeveloper.remotecontrol.di.MyApplication;
@@ -35,8 +36,13 @@ import ru.ialmostdeveloper.remotecontrol.mqtt.Storage;
 public class MainActivity extends AppCompatActivity {
     @Inject
     HashMap<String, IController> controllersList;
+
     @Inject
     Storage storage;
+
+    @Inject
+    Session session;
+
     @Inject
     RequestsManager requestsManager;
 
@@ -50,23 +56,25 @@ public class MainActivity extends AppCompatActivity {
         ((MyApplication) getApplication())
                 .getAppComponent()
                 .inject(this);
+
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
-        setSettingsButton();
+
+        setLogoutButton();
         setControllersSpinner();
         setControlsLayout();
         setAddControllerButton();
-        setApplyDeleteDialog();
+
+        if(!session.isValid)
+            startActivityForResult(new Intent(getApplicationContext(), AuthActivity.class), 0);
     }
 
-    private void setApplyDeleteDialog() {
-    }
-
-    private void setSettingsButton() {
+    private void setLogoutButton() {
         final Button settingsButton = findViewById(R.id.settingsBtn);
         settingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                storage.writeSession(new Session());
                 startActivityForResult(new Intent(getApplicationContext(), AuthActivity.class), 0);
             }
         });
@@ -134,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(!requestsManager.send(Integer.parseInt(currentController.getDeviceId()),
+                    if (!requestsManager.send(Integer.parseInt(currentController.getDeviceId()),
                             String.valueOf(buttonName.code), currentController.getClassName()))
                         Toast.makeText(getApplicationContext(), "Error occured", Toast.LENGTH_SHORT).show();
                 }
@@ -187,9 +195,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 0) {
-
-        }
         switch (requestCode) {
             case 0:
                 break;

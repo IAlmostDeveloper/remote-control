@@ -18,7 +18,6 @@ public class AuthActivity extends AppCompatActivity {
 
     @Inject
     Storage storage;
-
     @Inject
     RequestsManager requestsManager;
 
@@ -45,6 +44,10 @@ public class AuthActivity extends AppCompatActivity {
     private void setInputFields() {
         loginInput = findViewById(R.id.login_input);
         passwordInput = findViewById(R.id.password_input);
+        Session session = storage.readSession();
+        loginInput.setText(session.login);
+        passwordInput.setText(session.password);
+
     }
 
     private void setSignUpButton() {
@@ -59,7 +62,7 @@ public class AuthActivity extends AppCompatActivity {
                             Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if(!requestsManager.register(login, password))
+                if (!requestsManager.register(login, password))
                     Toast.makeText(getApplicationContext(), "User is already registered", Toast.LENGTH_SHORT).show();
             }
         });
@@ -77,13 +80,20 @@ public class AuthActivity extends AppCompatActivity {
                             Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if(requestsManager.auth(login, password)){
+                String token = requestsManager.auth(login, password);
+                if (!token.equals("")) {
+                    storage.writeSession(new Session(login, password, token, true));
                     setResult(RESULT_OK);
                     finish();
-                }
-                else
+                } else
                     Toast.makeText(getApplicationContext(), "Incorrect user data", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(storage.readSession().isValid)
+            super.onBackPressed();
     }
 }

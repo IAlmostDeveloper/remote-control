@@ -20,7 +20,7 @@ public class RequestsManager {
         this.session = session;
     }
 
-    public boolean auth(String login, String password) {
+    public String auth(String login, String password) {
         JSONObject requestBody = new JSONObject();
 
         try {
@@ -40,12 +40,12 @@ public class RequestsManager {
                 JSONObject responseBody = new JSONObject(bodyraw);
                 String token = responseBody.get("token").toString();
                 String error = responseBody.get("error").toString();
-                return error.equals("");
+                return error.equals("") ? token : "";
             }
         } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
-        return false;
+        return "";
     }
 
     public boolean register(String login, String password) {
