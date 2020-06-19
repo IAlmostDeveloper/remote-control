@@ -59,25 +59,26 @@ public class AddControllerActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String name = controllerNameInput.getText().toString();
                 IController newController = null;
-                switch(controllerPresetsSpinner.getSelectedItem().toString()){
+                switch (controllerPresetsSpinner.getSelectedItem().toString()) {
                     case "RC5":
-                        newController = new RC5Controller(controllerIdInput.getText().toString(),
+                        newController = new RC5Controller(controllerIdInput.getText().toString(), name,
                                 controllerPresets.get("RC5"));
                         break;
 
                     case "NEC":
-                        newController = new NECController(controllerIdInput.getText().toString(),
+                        newController = new NECController(controllerIdInput.getText().toString(), name,
                                 controllerPresets.get("NEC"));
                         break;
 
                     case "None":
-                        newController = new RC5Controller(controllerIdInput.getText().toString(),
+                        newController = new RC5Controller(controllerIdInput.getText().toString(), name,
                                 controllerPresets.get("None"));
                         break;
                 }
-                controllersList.put(controllerNameInput.getText().toString(), newController);
-                storage.writeControllers(controllersList);
+                controllersList.put(name, newController);
+//                storage.writeControllers(controllersList);
                 setResult(RESULT_OK);
                 finish();
             }

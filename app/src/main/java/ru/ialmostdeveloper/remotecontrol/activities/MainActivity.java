@@ -34,7 +34,7 @@ import ru.ialmostdeveloper.remotecontrol.mqtt.Storage;
 
 
 public class MainActivity extends AppCompatActivity {
-    @Inject
+
     HashMap<String, IController> controllersList;
 
     @Inject
@@ -53,19 +53,19 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
         ((MyApplication) getApplication())
                 .getAppComponent()
                 .inject(this);
 
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
 
         setLogoutButton();
         setControllersSpinner();
         setControlsLayout();
         setAddControllerButton();
 
-        if(!session.isValid)
+        if (!session.isValid)
             startActivityForResult(new Intent(getApplicationContext(), AuthActivity.class), 0);
     }
 
@@ -81,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setControllersSpinner() {
+        controllersList = requestsManager.getControllers(storage.readSession().login, storage.readSession().token);
         controllersSpinner = findViewById(R.id.controllersSpinner);
         ArrayList<String> items = new ArrayList<>(controllersList.keySet());
         controllersSpinnerAdapter = new ArrayAdapter<>(this, R.layout.spinner_item, items);
@@ -107,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
                                 String currentControllerName = controllersSpinner.getSelectedItem().toString();
                                 controllersSpinnerAdapter.remove(currentControllerName);
                                 controllersList.remove(currentControllerName);
-                                storage.writeControllers(controllersList);
+//                                storage.writeControllers(controllersList);
                                 setControlsLayout();
                             }
                         })
@@ -142,8 +143,9 @@ public class MainActivity extends AppCompatActivity {
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    requestsManager.getControllers(storage.readSession().login, storage.readSession().token);
                     if (!requestsManager.send(Integer.parseInt(currentController.getDeviceId()),
-                            String.valueOf(buttonName.code), currentController.getClassName()))
+                            String.valueOf(buttonName.code), currentController.getClassName(), storage.readSession().token))
                         Toast.makeText(getApplicationContext(), "Error occured", Toast.LENGTH_SHORT).show();
                 }
             });
@@ -157,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
                                 public void onClick(DialogInterface dialog, int which) {
                                     controlsLayout.removeView(button);
                                     currentController.removeControllerButton(buttonName.name);
-                                    storage.writeControllers(controllersList);
+//                                    storage.writeControllers(controllersList);
                                 }
                             })
                             .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -197,6 +199,10 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case 0:
+                if (resultCode == RESULT_OK) {
+                    setControllersSpinner();
+                    setControlsLayout();
+                }
                 break;
             case 1:
                 setControllersSpinner();
@@ -210,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
                             .getSelectedItem()
                             .toString()))
                             .addControllerButton(new ControllerButton(buttonName, buttonCode));
-                    storage.writeControllers(controllersList);
+//                    storage.writeControllers(controllersList);
                     setControlsLayout();
                 }
                 break;

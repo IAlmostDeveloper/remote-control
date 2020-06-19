@@ -7,8 +7,10 @@ public class NECController implements IController {
     private List<ControllerButton> controlButtons;
     private String deviceId;
     private final String className = "NECController";
-    public NECController(String deviceId, List<ControllerButton> controlButtons) {
+    private String name;
+    public NECController(String deviceId, String name, List<ControllerButton> controlButtons) {
         this.deviceId = deviceId;
+        this.name = name;
         setControlButtons(controlButtons);
     }
 
@@ -47,6 +49,11 @@ public class NECController implements IController {
 
     public String getDeviceId() {
         return deviceId;
+    }
+
+    @Override
+    public String getName() {
+        return name;
     }
 
 

@@ -48,8 +48,8 @@ class AppModule {
 
     @Provides
     @Singleton
-    RequestsManager provideRequestsManager(APIService service, Session session){
-        return new RequestsManager(service, session);
+    RequestsManager provideRequestsManager(APIService service){
+        return new RequestsManager(service);
     }
 
     @Provides
@@ -81,8 +81,9 @@ class AppModule {
 
     @Provides
     @Singleton
-    HashMap<String, IController> provideControllersList(Storage storage) {
-        return storage.readControllers();
+    HashMap<String, IController> provideControllersList(Storage storage, RequestsManager requestsManager) {
+//        return storage.readControllers();
+        return requestsManager.getControllers(storage.readSession().login, storage.readSession().token);
     }
 
     @Provides

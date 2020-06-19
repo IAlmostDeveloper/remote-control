@@ -1,23 +1,29 @@
 package ru.ialmostdeveloper.remotecontrol;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
+import ru.ialmostdeveloper.remotecontrol.controllers.ControllerButton;
+import ru.ialmostdeveloper.remotecontrol.controllers.IController;
+import ru.ialmostdeveloper.remotecontrol.controllers.NECController;
+import ru.ialmostdeveloper.remotecontrol.controllers.RC5Controller;
 
 public class RequestsManager {
     private APIService service;
-    private Session session;
 
-    public RequestsManager(APIService service, Session session) {
+    public RequestsManager(APIService service) {
         this.service = service;
-        this.session = session;
     }
 
     public String auth(String login, String password) {
@@ -75,13 +81,14 @@ public class RequestsManager {
         return false;
     }
 
-    public boolean send(int id, String code, String encoding) {
+    public boolean send(int id, String code, String encoding, String token) {
         JSONObject requestBody = new JSONObject();
 
         try {
             requestBody.put("id", id);
             requestBody.put("code", code);
             requestBody.put("encoding", encoding);
+            requestBody.put("token", token);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -98,5 +105,38 @@ public class RequestsManager {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public HashMap<String, IController> getControllers(String username, String token){
+        HashMap<String, IController> controllersHashMap = new HashMap<>();
+        Call<ResponseBody> call = service.controllers(username, token);
+        try {
+            Response<ResponseBody> response = call.execute();
+            if(response.code()==200) {
+                String bodyraw = response.body().string();
+                JSONObject responseBody = new JSONObject(bodyraw);
+                JSONArray controllersArray = responseBody.getJSONArray("controllers");
+
+                for(int i=0;i<controllersArray.length();i++){
+                    JSONObject a = new JSONObject(controllersArray.get(i).toString());
+                    String id = a.getString("id");
+                    String name = a.getString("name");
+                    String controllerId = a.getString("controllerId");
+                    String encoding = a.getString("encoding");
+                    String[] buttons = a.getString("buttons").split(";");
+                    List<ControllerButton> buttonsList = new ArrayList<>();
+                    for(int j=0;j<buttons.length;j+=2){
+                        ControllerButton button = new ControllerButton(buttons[j], Long.decode(buttons[j+1]));
+                        buttonsList.add(button);
+                    }
+                    IController controller = encoding.equals("RC5Controller") ? new RC5Controller(controllerId, name, buttonsList)
+                            : new NECController(controllerId, name, buttonsList);
+                    controllersHashMap.put(name, controller);
+                }
+            }
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+        return controllersHashMap;
     }
 }

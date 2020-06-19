@@ -8,6 +8,8 @@ public interface IController extends Convertable{
 
     String getDeviceId();
 
+    String getName();
+
     void setControlButtons(List<ControllerButton> controlButtons);
 
     void addControllerButton(ControllerButton button);

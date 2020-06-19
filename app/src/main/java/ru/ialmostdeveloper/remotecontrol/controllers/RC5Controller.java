@@ -7,9 +7,11 @@ public class RC5Controller implements IController {
     private List<ControllerButton> controlButtons;
     private String deviceId;
     private final String className = "RC5Controller";
+    private String name;
 
-    public RC5Controller(String deviceId, List<ControllerButton> controlButtons) {
+    public RC5Controller(String deviceId, String name, List<ControllerButton> controlButtons) {
         this.deviceId = deviceId;
+        this.name = name;
         setControlButtons(controlButtons);
     }
 
@@ -48,6 +50,11 @@ public class RC5Controller implements IController {
 
     public String getDeviceId() {
         return deviceId;
+    }
+
+    @Override
+    public String getName() {
+        return name;
     }
 
     @Override
