@@ -82,7 +82,6 @@ class AppModule {
     @Provides
     @Singleton
     HashMap<String, IController> provideControllersList(Storage storage, RequestsManager requestsManager) {
-//        return storage.readControllers();
         return requestsManager.getControllers(storage.readSession().login, storage.readSession().token);
     }
 

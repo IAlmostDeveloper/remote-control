@@ -41,7 +41,7 @@ public class RequestsManager {
         try {
             Response<ResponseBody> response = call.execute();
 
-            if(response.code()==200) {
+            if (response.code() == 200) {
                 String bodyraw = response.body().string();
                 JSONObject responseBody = new JSONObject(bodyraw);
                 String token = responseBody.get("token").toString();
@@ -69,7 +69,7 @@ public class RequestsManager {
         try {
             Response<ResponseBody> response = call.execute();
 
-            if(response.code()==200) {
+            if (response.code() == 200) {
                 String bodyraw = response.body().string();
                 JSONObject responseBody = new JSONObject(bodyraw);
                 String error = responseBody.get("error").toString();
@@ -107,17 +107,17 @@ public class RequestsManager {
         return false;
     }
 
-    public HashMap<String, IController> getControllers(String username, String token){
+    public HashMap<String, IController> getControllers(String username, String token) {
         HashMap<String, IController> controllersHashMap = new HashMap<>();
         Call<ResponseBody> call = service.controllers(username, token);
         try {
             Response<ResponseBody> response = call.execute();
-            if(response.code()==200) {
+            if (response.code() == 200) {
                 String bodyraw = response.body().string();
                 JSONObject responseBody = new JSONObject(bodyraw);
                 JSONArray controllersArray = responseBody.getJSONArray("controllers");
 
-                for(int i=0;i<controllersArray.length();i++){
+                for (int i = 0; i < controllersArray.length(); i++) {
                     JSONObject a = new JSONObject(controllersArray.get(i).toString());
                     String id = a.getString("id");
                     String name = a.getString("name");
@@ -125,10 +125,11 @@ public class RequestsManager {
                     String encoding = a.getString("encoding");
                     String[] buttons = a.getString("buttons").split(";");
                     List<ControllerButton> buttonsList = new ArrayList<>();
-                    for(int j=0;j<buttons.length;j+=2){
-                        ControllerButton button = new ControllerButton(buttons[j], Long.decode(buttons[j+1]));
-                        buttonsList.add(button);
-                    }
+                    if (buttons.length >= 2)
+                        for (int j = 0; j < buttons.length; j += 2) {
+                            ControllerButton button = new ControllerButton(buttons[j], Long.decode(buttons[j + 1]));
+                            buttonsList.add(button);
+                        }
                     IController controller = encoding.equals("RC5Controller") ? new RC5Controller(controllerId, name, buttonsList)
                             : new NECController(controllerId, name, buttonsList);
                     controllersHashMap.put(name, controller);
@@ -138,5 +139,104 @@ public class RequestsManager {
             e.printStackTrace();
         }
         return controllersHashMap;
+    }
+
+    public boolean addController(IController controller, String login, String token) {
+        JSONObject requestBody = new JSONObject();
+        StringBuilder buttons = new StringBuilder();
+        for (ControllerButton button : controller.getControlButtons()) {
+            buttons.append(button.name);
+            buttons.append(";");
+            buttons.append(button.code);
+            buttons.append(";");
+        }
+        try {
+            requestBody.put("token", token);
+            requestBody.put("name", controller.getName());
+            requestBody.put("user", login);
+            requestBody.put("controllerId", controller.getDeviceId());
+            requestBody.put("encoding", controller.getClassName());
+            requestBody.put("buttons", buttons.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody bodyRequest = RequestBody.create(MediaType.parse("application/json"), requestBody.toString());
+        Call<ResponseBody> call = service.addController(bodyRequest);
+
+        try {
+            Response<ResponseBody> response = call.execute();
+
+            if (response.code() == 200) {
+                String bodyraw = response.body().string();
+                JSONObject responseBody = new JSONObject(bodyraw);
+                System.out.println(responseBody.toString());
+                return true;
+            }
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean updateController(IController controller, String login, String token) {
+        JSONObject requestBody = new JSONObject();
+        StringBuilder buttons = new StringBuilder();
+        for (ControllerButton button : controller.getControlButtons()) {
+            buttons.append(button.name);
+            buttons.append(";");
+            buttons.append(button.code);
+            buttons.append(";");
+        }
+        try {
+            requestBody.put("token", token);
+            requestBody.put("name", controller.getName());
+            requestBody.put("user", login);
+            requestBody.put("buttons", buttons.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody bodyRequest = RequestBody.create(MediaType.parse("application/json"), requestBody.toString());
+        Call<ResponseBody> call = service.updateController(bodyRequest);
+
+        try {
+            Response<ResponseBody> response = call.execute();
+
+            if (response.code() == 200) {
+                String bodyraw = response.body().string();
+                JSONObject responseBody = new JSONObject(bodyraw);
+                System.out.println(responseBody.toString());
+                return true;
+            }
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean deleteController(String controllerName, String login, String token) {
+        JSONObject requestBody = new JSONObject();
+        try {
+            requestBody.put("token", token);
+            requestBody.put("name", controllerName);
+            requestBody.put("user", login);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody bodyRequest = RequestBody.create(MediaType.parse("application/json"), requestBody.toString());
+        Call<ResponseBody> call = service.deleteController(bodyRequest);
+
+        try {
+            Response<ResponseBody> response = call.execute();
+
+            if (response.code() == 200) {
+                String bodyraw = response.body().string();
+                JSONObject responseBody = new JSONObject(bodyraw);
+                System.out.println(responseBody.toString());
+                return true;
+            }
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

@@ -16,6 +16,8 @@ import java.util.List;
 import javax.inject.Inject;
 
 import ru.ialmostdeveloper.remotecontrol.R;
+import ru.ialmostdeveloper.remotecontrol.RequestsManager;
+import ru.ialmostdeveloper.remotecontrol.Session;
 import ru.ialmostdeveloper.remotecontrol.controllers.ControllerButton;
 import ru.ialmostdeveloper.remotecontrol.controllers.IController;
 import ru.ialmostdeveloper.remotecontrol.controllers.NECController;
@@ -27,10 +29,12 @@ public class AddControllerActivity extends AppCompatActivity {
 
     @Inject
     Storage storage;
-    @Inject
-    HashMap<String, IController> controllersList;
+
     @Inject
     HashMap<String, List<ControllerButton>> controllerPresets;
+
+    @Inject
+    RequestsManager requestsManager;
 
     EditText controllerNameInput;
     EditText controllerIdInput;
@@ -77,10 +81,12 @@ public class AddControllerActivity extends AppCompatActivity {
                                 controllerPresets.get("None"));
                         break;
                 }
-                controllersList.put(name, newController);
-//                storage.writeControllers(controllersList);
-                setResult(RESULT_OK);
-                finish();
+                assert newController != null;
+                Session session = storage.readSession();
+                if (requestsManager.addController(newController, session.login, session.token)) {
+                    setResult(RESULT_OK);
+                    finish();
+                }
             }
         });
     }

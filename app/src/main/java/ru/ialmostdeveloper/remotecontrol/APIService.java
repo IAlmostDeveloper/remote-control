@@ -24,4 +24,13 @@ public interface APIService {
 
     @GET("/controllers")
     Call<ResponseBody> controllers(@Query("user") String user, @Query("token") String token);
+
+    @POST("/add/controller")
+    Call<ResponseBody> addController(@Body RequestBody body);
+
+    @POST("/update/controller")
+    Call<ResponseBody> updateController(@Body RequestBody body);
+
+    @POST("delete/controller")
+    Call<ResponseBody> deleteController(@Body RequestBody body);
 }

@@ -108,7 +108,8 @@ public class MainActivity extends AppCompatActivity {
                                 String currentControllerName = controllersSpinner.getSelectedItem().toString();
                                 controllersSpinnerAdapter.remove(currentControllerName);
                                 controllersList.remove(currentControllerName);
-//                                storage.writeControllers(controllersList);
+                                requestsManager.deleteController(currentControllerName,
+                                        storage.readSession().login, storage.readSession().token);
                                 setControlsLayout();
                             }
                         })
@@ -159,7 +160,8 @@ public class MainActivity extends AppCompatActivity {
                                 public void onClick(DialogInterface dialog, int which) {
                                     controlsLayout.removeView(button);
                                     currentController.removeControllerButton(buttonName.name);
-//                                    storage.writeControllers(controllersList);
+                                    requestsManager.updateController(currentController,
+                                            storage.readSession().login, storage.readSession().token);
                                 }
                             })
                             .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -212,11 +214,11 @@ public class MainActivity extends AppCompatActivity {
                     assert data != null;
                     String buttonName = data.getStringExtra("ButtonName");
                     long buttonCode = data.getLongExtra("ButtonCode", 0);
-                    Objects.requireNonNull(controllersList.get(controllersSpinner
-                            .getSelectedItem()
-                            .toString()))
-                            .addControllerButton(new ControllerButton(buttonName, buttonCode));
-//                    storage.writeControllers(controllersList);
+                    ControllerButton newButton = new ControllerButton(buttonName, buttonCode);
+                    IController currentController = controllersList.get(controllersSpinner.getSelectedItem());
+                    assert currentController != null;
+                    currentController.addControllerButton(newButton);
+                    requestsManager.updateController(currentController, storage.readSession().login, storage.readSession().token);
                     setControlsLayout();
                 }
                 break;
