@@ -22,6 +22,9 @@ public interface APIService {
     @POST("/send")
     Call<ResponseBody> send(@Body RequestBody body);
 
+    @POST("/receive")
+    Call<ResponseBody> receive(@Body RequestBody body);
+
     @GET("/controllers")
     Call<ResponseBody> controllers(@Query("user") String user, @Query("token") String token);
 

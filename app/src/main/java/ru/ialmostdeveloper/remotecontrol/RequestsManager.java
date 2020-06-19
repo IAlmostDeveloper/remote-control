@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
@@ -105,6 +106,34 @@ public class RequestsManager {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public long receiveCode(String controllerId){
+        JSONObject requestBody = new JSONObject();
+
+        try {
+            String requestTopic = "remoteControl/devices/" + controllerId + "/receive";
+            String responseTopic = "Client" + new Random().nextLong();
+            requestBody.put("requestTopic", requestTopic);
+            requestBody.put("responseTopic", responseTopic);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody bodyRequest = RequestBody.create(MediaType.parse("application/json"), requestBody.toString());
+        Call<ResponseBody> call = service.receive(bodyRequest);
+
+        try {
+            Response<ResponseBody> response = call.execute();
+
+            if (response.code() == 200) {
+                String rawBody = response.body().string();
+
+                return Long.parseLong(new JSONObject(rawBody).get("code").toString());
+            }
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+        return -1;
     }
 
     public HashMap<String, IController> getControllers(String username, String token) {

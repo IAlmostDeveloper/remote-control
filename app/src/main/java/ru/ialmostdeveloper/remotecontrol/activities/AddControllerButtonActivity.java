@@ -13,6 +13,7 @@ import java.util.HashMap;
 import javax.inject.Inject;
 
 import ru.ialmostdeveloper.remotecontrol.R;
+import ru.ialmostdeveloper.remotecontrol.RequestsManager;
 import ru.ialmostdeveloper.remotecontrol.controllers.IController;
 import ru.ialmostdeveloper.remotecontrol.di.MyApplication;
 import ru.ialmostdeveloper.remotecontrol.mqtt.Storage;
@@ -23,6 +24,8 @@ public class AddControllerButtonActivity extends AppCompatActivity {
     HashMap<String, IController> controllersList;
     @Inject
     Storage storage;
+    @Inject
+    RequestsManager requestsManager;
 
     EditText buttonNameInput;
     EditText buttonCodeInput;
@@ -41,10 +44,10 @@ public class AddControllerButtonActivity extends AppCompatActivity {
     }
 
     private void setReceiverButton() {
-//        Button receiverButton = findViewById(R.id.getCodeFromReceiverButton);
-//        receiverButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
+        Button receiverButton = findViewById(R.id.getCodeFromReceiverButton);
+        receiverButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 //                String requestTopic = "remoteControl/devices/" + getIntent().getStringExtra("deviceId") + "/receive";
 //                String responseTopic = mqttManager.getClient().getClientId();
 //                try {
@@ -78,8 +81,11 @@ public class AddControllerButtonActivity extends AppCompatActivity {
 //                } catch (MqttException e) {
 //                    e.printStackTrace();
 //                }
-//            }
-//        });
+                long value = requestsManager.receiveCode(getIntent().getStringExtra("deviceId"));
+                String receivedCode = Long.toHexString(value);
+                buttonCodeInput.setText("0x" + receivedCode);
+            }
+        });
     }
 
     private void setInputs() {
