@@ -1,6 +1,7 @@
 package ru.ialmostdeveloper.remotecontrol.activities;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -56,13 +57,12 @@ public class MainActivity extends AppCompatActivity {
                 .getAppComponent()
                 .inject(this);
 
-
-        setLogoutButton();
-        new GetControllersTask().execute();
-        setAddControllerButton();
-
         if (!session.isValid)
             startActivityForResult(new Intent(getApplicationContext(), AuthActivity.class), 0);
+
+        setLogoutButton();
+        setAddControllerButton();
+        new GetControllersTask().execute();
     }
 
     private void setLogoutButton() {
@@ -138,10 +138,9 @@ public class MainActivity extends AppCompatActivity {
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    requestsManager.getControllers(storage.readSession().login, storage.readSession().token);
-                    if (!requestsManager.send(Integer.parseInt(currentController.getDeviceId()),
-                            String.valueOf(buttonName.code), currentController.getClassName(), storage.readSession().token))
-                        Toast.makeText(getApplicationContext(), "Error occured", Toast.LENGTH_SHORT).show();
+                    new SendCodeTask().execute(currentController.getDeviceId(),
+                            String.valueOf(buttonName.code), currentController.getClassName());
+
                 }
             });
             button.setOnLongClickListener(new View.OnLongClickListener() {
@@ -218,6 +217,8 @@ public class MainActivity extends AppCompatActivity {
 
     class GetControllersTask extends AsyncTask<Void, Void, Void> {
 
+        ProgressDialog progressDialog;
+
         @Override
         protected Void doInBackground(Void... voids) {
             controllersList = requestsManager.getControllers(storage.readSession().login, storage.readSession().token);
@@ -229,6 +230,16 @@ public class MainActivity extends AppCompatActivity {
             super.onPostExecute(aVoid);
             setControllersSpinner();
             setControlsLayout();
+            progressDialog.dismiss();
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(MainActivity.this);
+            progressDialog.setMessage("Connecting...");
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.show();
         }
     }
 
@@ -261,6 +272,26 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             setControlsLayout();
+        }
+    }
+
+    class SendCodeTask extends AsyncTask<String, Void, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(String... strings) {
+            String deviceId = strings[0];
+            String code = strings[1];
+            String encoding = strings[2];
+
+            return requestsManager.send(Integer.parseInt(deviceId),
+                    code, encoding, storage.readSession().token);
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            super.onPostExecute(aBoolean);
+            if (!aBoolean)
+                Toast.makeText(getApplicationContext(), "Error occurred", Toast.LENGTH_SHORT).show();
         }
     }
 }
