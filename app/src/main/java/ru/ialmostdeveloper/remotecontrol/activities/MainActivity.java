@@ -35,17 +35,15 @@ import ru.ialmostdeveloper.remotecontrol.network.Session;
 
 public class MainActivity extends AppCompatActivity {
 
-    HashMap<String, IController> controllersList;
-
     @Inject
     Storage storage;
-
     @Inject
     Session session;
-
     @Inject
     RequestsManager requestsManager;
 
+    ProgressDialog progressDialog;
+    HashMap<String, IController> controllersList;
     Spinner controllersSpinner;
     ArrayAdapter<String> controllersSpinnerAdapter;
 
@@ -60,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
         if (!session.isValid)
             startActivityForResult(new Intent(getApplicationContext(), AuthActivity.class), 0);
 
+        setProgressDialog();
         setLogoutButton();
         setAddControllerButton();
         new GetControllersTask().execute();
@@ -188,6 +187,11 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void setProgressDialog(){
+        progressDialog = new ProgressDialog(MainActivity.this);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -217,7 +221,6 @@ public class MainActivity extends AppCompatActivity {
 
     class GetControllersTask extends AsyncTask<Void, Void, Void> {
 
-        ProgressDialog progressDialog;
 
         @Override
         protected Void doInBackground(Void... voids) {
@@ -231,14 +234,13 @@ public class MainActivity extends AppCompatActivity {
             setControllersSpinner();
             setControlsLayout();
             progressDialog.dismiss();
+
         }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressDialog = new ProgressDialog(MainActivity.this);
-            progressDialog.setMessage("Connecting...");
-            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setMessage("Loading...");
             progressDialog.show();
         }
     }
@@ -257,6 +259,11 @@ public class MainActivity extends AppCompatActivity {
             super.onPostExecute(aVoid);
             new GetControllersTask().execute();
         }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
     }
 
     class DeleteControllerTask extends AsyncTask<String, Void, Void> {
@@ -272,6 +279,14 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             setControlsLayout();
+            progressDialog.dismiss();
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog.setMessage("Loading...");
+            progressDialog.show();
         }
     }
 
@@ -290,8 +305,16 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Boolean aBoolean) {
             super.onPostExecute(aBoolean);
+            progressDialog.dismiss();
             if (!aBoolean)
                 Toast.makeText(getApplicationContext(), "Error occurred", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog.setMessage("Sending code...");
+            progressDialog.show();
         }
     }
 }

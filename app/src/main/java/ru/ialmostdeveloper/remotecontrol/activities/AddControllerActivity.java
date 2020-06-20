@@ -1,5 +1,6 @@
 package ru.ialmostdeveloper.remotecontrol.activities;
 
+import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -40,6 +41,7 @@ public class AddControllerActivity extends AppCompatActivity {
     EditText controllerNameInput;
     EditText controllerIdInput;
     Spinner controllerPresetsSpinner;
+    ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +51,7 @@ public class AddControllerActivity extends AppCompatActivity {
                 .getAppComponent()
                 .inject(this);
 
+        setProgressDialog();
         setInputs();
         setControllersSpinner();
         setAddControllerButton();
@@ -95,6 +98,11 @@ public class AddControllerActivity extends AppCompatActivity {
         controllerPresetsSpinner.setAdapter(adapter);
     }
 
+    private void setProgressDialog(){
+        progressDialog = new ProgressDialog(AddControllerActivity.this);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+    }
+
     class AddControllerTask extends AsyncTask<IController, Void, Boolean>{
 
         @Override
@@ -107,10 +115,18 @@ public class AddControllerActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Boolean aBoolean) {
             super.onPostExecute(aBoolean);
+            progressDialog.dismiss();
             if (aBoolean) {
                 setResult(RESULT_OK);
                 finish();
             }
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog.setMessage("Loading...");
+            progressDialog.show();
         }
     }
 }

@@ -1,5 +1,6 @@
 package ru.ialmostdeveloper.remotecontrol.activities;
 
+import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -26,6 +27,7 @@ public class AuthActivity extends AppCompatActivity {
 
     EditText loginInput;
     EditText passwordInput;
+    ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +38,7 @@ public class AuthActivity extends AppCompatActivity {
                 .getAppComponent()
                 .inject(this);
 
+        setProgressDialog();
         setInputFields();
         setSignInButton();
         setSignUpButton();
@@ -85,6 +88,11 @@ public class AuthActivity extends AppCompatActivity {
         });
     }
 
+    private void setProgressDialog(){
+        progressDialog = new ProgressDialog(AuthActivity.this);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+    }
+
     class AuthTask extends AsyncTask<String, String, String>{
 
         String login;
@@ -99,13 +107,20 @@ public class AuthActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            System.out.println(s);
+            progressDialog.dismiss();
             if (!s.equals("")) {
                 storage.writeSession(new Session(login, password, s, true));
                 setResult(RESULT_OK);
                 finish();
             } else
                 Toast.makeText(getApplicationContext(), "Incorrect user data", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog.setMessage("Loading...");
+            progressDialog.show();
         }
     }
 
@@ -124,8 +139,16 @@ public class AuthActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Boolean aBoolean) {
             super.onPostExecute(aBoolean);
+            progressDialog.dismiss();
             Toast.makeText(getApplicationContext(), aBoolean ? "Registration successful"
                     : "This user is already registered", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog.setMessage("Loading...");
+            progressDialog.show();
         }
     }
 
