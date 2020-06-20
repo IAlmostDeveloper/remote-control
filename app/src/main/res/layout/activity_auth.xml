@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/colorAccent"
-    tools:context="ru.ialmostdeveloper.remotecontrol.AuthActivity">
+    tools:context="ru.ialmostdeveloper.remotecontrol.activities.AuthActivity">
 
     <TextView
         style="@style/TextView"

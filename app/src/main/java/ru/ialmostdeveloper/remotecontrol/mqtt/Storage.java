@@ -9,7 +9,7 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import ru.ialmostdeveloper.remotecontrol.Session;
+import ru.ialmostdeveloper.remotecontrol.network.Session;
 
 public class Storage {
     private Context context;

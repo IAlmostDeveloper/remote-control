@@ -1,6 +1,7 @@
 package ru.ialmostdeveloper.remotecontrol.activities;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -13,14 +14,13 @@ import java.util.HashMap;
 import javax.inject.Inject;
 
 import ru.ialmostdeveloper.remotecontrol.R;
-import ru.ialmostdeveloper.remotecontrol.RequestsManager;
+import ru.ialmostdeveloper.remotecontrol.network.RequestsManager;
 import ru.ialmostdeveloper.remotecontrol.controllers.IController;
 import ru.ialmostdeveloper.remotecontrol.di.MyApplication;
 import ru.ialmostdeveloper.remotecontrol.mqtt.Storage;
 
 public class AddControllerButtonActivity extends AppCompatActivity {
 
-    @Inject
     HashMap<String, IController> controllersList;
     @Inject
     Storage storage;
@@ -38,9 +38,7 @@ public class AddControllerButtonActivity extends AppCompatActivity {
                 .getAppComponent()
                 .inject(this);
 
-        setAddButton();
-        setReceiverButton();
-        setInputs();
+        new GetControllersTask().execute();
     }
 
     private void setReceiverButton() {
@@ -48,39 +46,6 @@ public class AddControllerButtonActivity extends AppCompatActivity {
         receiverButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                String requestTopic = "remoteControl/devices/" + getIntent().getStringExtra("deviceId") + "/receive";
-//                String responseTopic = mqttManager.getClient().getClientId();
-//                try {
-//                    mqttManager.getClient().subscribe(responseTopic, 0);
-//                } catch (MqttException e) {
-//                    e.printStackTrace();
-//                }
-//                mqttManager.getClient().setCallback(new MqttCallback() {
-//                    @Override
-//                    public void connectionLost(Throwable cause) {
-//
-//                    }
-//
-//                    @Override
-//                    public void messageArrived(String topic, MqttMessage message) throws Exception {
-//                        JSONObject obj = new JSONObject(new String(message.getPayload()));
-//                        long value = Long.parseLong(obj.get("code").toString());
-//                        String receivedCode = Long.toHexString(value);
-//                        buttonCodeInput.setText("0x" + receivedCode);
-//                    }
-//
-//                    @Override
-//                    public void deliveryComplete(IMqttDeliveryToken token) {
-//
-//                    }
-//                });
-//                MqttMessage responseMessage = new MqttMessage();
-//                responseMessage.setPayload(responseTopic.getBytes());
-//                try {
-//                    mqttManager.getClient().publish(requestTopic, responseMessage);
-//                } catch (MqttException e) {
-//                    e.printStackTrace();
-//                }
                 long value = requestsManager.receiveCode(getIntent().getStringExtra("deviceId"));
                 String receivedCode = Long.toHexString(value);
                 buttonCodeInput.setText("0x" + receivedCode);
@@ -105,5 +70,22 @@ public class AddControllerButtonActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    class GetControllersTask extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            controllersList = requestsManager.getControllers(storage.readSession().login, storage.readSession().token);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            setAddButton();
+            setReceiverButton();
+            setInputs();
+        }
     }
 }

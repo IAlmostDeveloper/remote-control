@@ -16,8 +16,8 @@ import java.util.List;
 import javax.inject.Inject;
 
 import ru.ialmostdeveloper.remotecontrol.R;
-import ru.ialmostdeveloper.remotecontrol.RequestsManager;
-import ru.ialmostdeveloper.remotecontrol.Session;
+import ru.ialmostdeveloper.remotecontrol.network.RequestsManager;
+import ru.ialmostdeveloper.remotecontrol.network.Session;
 import ru.ialmostdeveloper.remotecontrol.controllers.ControllerButton;
 import ru.ialmostdeveloper.remotecontrol.controllers.IController;
 import ru.ialmostdeveloper.remotecontrol.controllers.NECController;

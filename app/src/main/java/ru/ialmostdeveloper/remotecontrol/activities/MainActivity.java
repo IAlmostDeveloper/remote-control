@@ -3,8 +3,8 @@ package ru.ialmostdeveloper.remotecontrol.activities;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -23,14 +23,13 @@ import java.util.Objects;
 
 import javax.inject.Inject;
 
-import ru.ialmostdeveloper.remotecontrol.AuthActivity;
 import ru.ialmostdeveloper.remotecontrol.R;
-import ru.ialmostdeveloper.remotecontrol.RequestsManager;
-import ru.ialmostdeveloper.remotecontrol.Session;
 import ru.ialmostdeveloper.remotecontrol.controllers.ControllerButton;
 import ru.ialmostdeveloper.remotecontrol.controllers.IController;
 import ru.ialmostdeveloper.remotecontrol.di.MyApplication;
 import ru.ialmostdeveloper.remotecontrol.mqtt.Storage;
+import ru.ialmostdeveloper.remotecontrol.network.RequestsManager;
+import ru.ialmostdeveloper.remotecontrol.network.Session;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -53,16 +52,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
         ((MyApplication) getApplication())
                 .getAppComponent()
                 .inject(this);
 
 
         setLogoutButton();
-        setControllersSpinner();
-        setControlsLayout();
+        new GetControllersTask().execute();
         setAddControllerButton();
 
         if (!session.isValid)
@@ -81,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setControllersSpinner() {
-        controllersList = requestsManager.getControllers(storage.readSession().login, storage.readSession().token);
+
         controllersSpinner = findViewById(R.id.controllersSpinner);
         ArrayList<String> items = new ArrayList<>(controllersList.keySet());
         controllersSpinnerAdapter = new ArrayAdapter<>(this, R.layout.spinner_item, items);
@@ -202,8 +198,7 @@ public class MainActivity extends AppCompatActivity {
         switch (requestCode) {
             case 0:
                 if (resultCode == RESULT_OK) {
-                    setControllersSpinner();
-                    setControlsLayout();
+                    new GetControllersTask().execute();
                 }
                 break;
             case 1:
@@ -218,10 +213,41 @@ public class MainActivity extends AppCompatActivity {
                     IController currentController = controllersList.get(controllersSpinner.getSelectedItem());
                     assert currentController != null;
                     currentController.addControllerButton(newButton);
-                    requestsManager.updateController(currentController, storage.readSession().login, storage.readSession().token);
-                    setControlsLayout();
+                    new UpdateControllerTask().execute(currentController);
                 }
                 break;
+        }
+    }
+
+    class GetControllersTask extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            controllersList = requestsManager.getControllers(storage.readSession().login, storage.readSession().token);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            setControllersSpinner();
+            setControlsLayout();
+        }
+    }
+
+    class UpdateControllerTask extends AsyncTask<IController, Void, Void>{
+
+        @Override
+        protected Void doInBackground(IController... iControllers) {
+            IController currentController = iControllers[0];
+            requestsManager.updateController(currentController, storage.readSession().login, storage.readSession().token);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            new GetControllersTask().execute();
         }
     }
 }

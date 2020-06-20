@@ -1,4 +1,4 @@
-package ru.ialmostdeveloper.remotecontrol;
+package ru.ialmostdeveloper.remotecontrol.network;
 
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;

@@ -8,7 +8,7 @@ import dagger.BindsInstance;
 import dagger.Component;
 import ru.ialmostdeveloper.remotecontrol.activities.AddControllerActivity;
 import ru.ialmostdeveloper.remotecontrol.activities.AddControllerButtonActivity;
-import ru.ialmostdeveloper.remotecontrol.AuthActivity;
+import ru.ialmostdeveloper.remotecontrol.activities.AuthActivity;
 import ru.ialmostdeveloper.remotecontrol.activities.MainActivity;
 
 @Singleton

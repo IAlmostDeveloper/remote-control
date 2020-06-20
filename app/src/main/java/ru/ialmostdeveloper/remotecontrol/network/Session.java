@@ -1,4 +1,4 @@
-package ru.ialmostdeveloper.remotecontrol;
+package ru.ialmostdeveloper.remotecontrol.network;
 
 public class Session {
     public String login;

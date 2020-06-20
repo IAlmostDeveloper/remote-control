@@ -15,12 +15,11 @@ import dagger.Module;
 import dagger.Provides;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import ru.ialmostdeveloper.remotecontrol.APIService;
-import ru.ialmostdeveloper.remotecontrol.RequestsManager;
-import ru.ialmostdeveloper.remotecontrol.Session;
 import ru.ialmostdeveloper.remotecontrol.controllers.ControllerButton;
-import ru.ialmostdeveloper.remotecontrol.controllers.IController;
 import ru.ialmostdeveloper.remotecontrol.mqtt.Storage;
+import ru.ialmostdeveloper.remotecontrol.network.APIService;
+import ru.ialmostdeveloper.remotecontrol.network.RequestsManager;
+import ru.ialmostdeveloper.remotecontrol.network.Session;
 
 @Module
 class AppModule {
@@ -77,12 +76,6 @@ class AppModule {
     @Singleton
     Session provideSession(Storage storage){
         return storage.readSession();
-    }
-
-    @Provides
-    @Singleton
-    HashMap<String, IController> provideControllersList(Storage storage, RequestsManager requestsManager) {
-        return requestsManager.getControllers(storage.readSession().login, storage.readSession().token);
     }
 
     @Provides

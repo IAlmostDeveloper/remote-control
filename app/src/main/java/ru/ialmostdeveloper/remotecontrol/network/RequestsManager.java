@@ -1,4 +1,4 @@
-package ru.ialmostdeveloper.remotecontrol;
+package ru.ialmostdeveloper.remotecontrol.network;
 
 import org.json.JSONArray;
 import org.json.JSONException;
