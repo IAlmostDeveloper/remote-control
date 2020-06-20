@@ -1,5 +1,6 @@
 package ru.ialmostdeveloper.remotecontrol.activities;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -82,11 +83,7 @@ public class AddControllerActivity extends AppCompatActivity {
                         break;
                 }
                 assert newController != null;
-                Session session = storage.readSession();
-                if (requestsManager.addController(newController, session.login, session.token)) {
-                    setResult(RESULT_OK);
-                    finish();
-                }
+                new AddControllerTask().execute(newController);
             }
         });
     }
@@ -96,5 +93,24 @@ public class AddControllerActivity extends AppCompatActivity {
         ArrayList<String> items = new ArrayList<>(controllerPresets.keySet());
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.spinner_item, items);
         controllerPresetsSpinner.setAdapter(adapter);
+    }
+
+    class AddControllerTask extends AsyncTask<IController, Void, Boolean>{
+
+        @Override
+        protected Boolean doInBackground(IController... iControllers) {
+            IController newController = iControllers[0];
+            Session session = storage.readSession();
+            return requestsManager.addController(newController, session.login, session.token);
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            super.onPostExecute(aBoolean);
+            if (aBoolean) {
+                setResult(RESULT_OK);
+                finish();
+            }
+        }
     }
 }

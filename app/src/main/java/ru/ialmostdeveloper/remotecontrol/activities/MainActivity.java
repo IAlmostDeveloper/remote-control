@@ -104,9 +104,7 @@ public class MainActivity extends AppCompatActivity {
                                 String currentControllerName = controllersSpinner.getSelectedItem().toString();
                                 controllersSpinnerAdapter.remove(currentControllerName);
                                 controllersList.remove(currentControllerName);
-                                requestsManager.deleteController(currentControllerName,
-                                        storage.readSession().login, storage.readSession().token);
-                                setControlsLayout();
+                                new DeleteControllerTask().execute(currentControllerName);
                             }
                         })
                         .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -156,8 +154,7 @@ public class MainActivity extends AppCompatActivity {
                                 public void onClick(DialogInterface dialog, int which) {
                                     controlsLayout.removeView(button);
                                     currentController.removeControllerButton(buttonName.name);
-                                    requestsManager.updateController(currentController,
-                                            storage.readSession().login, storage.readSession().token);
+                                    new UpdateControllerTask().execute(currentController);
                                 }
                             })
                             .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -202,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 break;
             case 1:
-                setControllersSpinner();
+                new GetControllersTask().execute();
                 break;
             case 2:
                 if (resultCode == RESULT_OK) {
@@ -235,7 +232,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    class UpdateControllerTask extends AsyncTask<IController, Void, Void>{
+    class UpdateControllerTask extends AsyncTask<IController, Void, Void> {
 
         @Override
         protected Void doInBackground(IController... iControllers) {
@@ -248,6 +245,22 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             new GetControllersTask().execute();
+        }
+    }
+
+    class DeleteControllerTask extends AsyncTask<String, Void, Void> {
+        @Override
+        protected Void doInBackground(String... strings) {
+            String currentControllerName = strings[0];
+            requestsManager.deleteController(currentControllerName,
+                    storage.readSession().login, storage.readSession().token);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            setControlsLayout();
         }
     }
 }
