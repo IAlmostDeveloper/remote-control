@@ -37,6 +37,15 @@ public interface APIService {
     @POST("/update/controller")
     Call<ResponseBody> updateController(@Body RequestBody body);
 
-    @POST("delete/controller")
+    @POST("/delete/controller")
     Call<ResponseBody> deleteController(@Body RequestBody body);
+
+    @GET("/userscripts")
+    Call<ResponseBody> userScripts(@Query("user") String user, @Query("token") String token);
+
+    @POST("/script")
+    Call<ResponseBody> addScript(@Body RequestBody body);
+
+    @POST("/execute")
+    Call<ResponseBody> executeScript(@Body RequestBody body);
 }

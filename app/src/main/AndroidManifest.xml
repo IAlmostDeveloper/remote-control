@@ -17,7 +17,9 @@
         android:roundIcon="@mipmap/ic_icon_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.AuthActivity"></activity>
+        <activity android:name=".activities.CreateScriptActivity"></activity>
+        <activity android:name=".activities.ScriptsActivity" />
+        <activity android:name=".activities.AuthActivity" />
         <activity android:name=".activities.AddControllerButtonActivity" />
         <activity android:name=".activities.AddControllerActivity" />
 

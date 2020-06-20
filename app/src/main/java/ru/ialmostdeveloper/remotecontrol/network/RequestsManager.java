@@ -15,6 +15,7 @@ import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
+import ru.ialmostdeveloper.remotecontrol.ControllerScript;
 import ru.ialmostdeveloper.remotecontrol.controllers.ControllerButton;
 import ru.ialmostdeveloper.remotecontrol.controllers.IController;
 import ru.ialmostdeveloper.remotecontrol.controllers.NECController;
@@ -282,5 +283,17 @@ public class RequestsManager {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public List<ControllerScript> getUserScripts(){
+        return null;
+    }
+
+    public boolean addScript(){
+        return true;
+    }
+
+    public boolean executeScript(){
+        return true;
     }
 }

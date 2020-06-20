@@ -1,7 +1,10 @@
 package ru.ialmostdeveloper.remotecontrol.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import ru.ialmostdeveloper.remotecontrol.R;
 
 public class ScriptsActivity extends AppCompatActivity {
 
