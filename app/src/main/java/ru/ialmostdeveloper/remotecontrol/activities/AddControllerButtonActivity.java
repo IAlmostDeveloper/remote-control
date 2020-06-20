@@ -49,9 +49,7 @@ public class AddControllerButtonActivity extends AppCompatActivity {
         receiverButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                long value = requestsManager.receiveCode(getIntent().getStringExtra("deviceId"));
-                String receivedCode = Long.toHexString(value);
-                buttonCodeInput.setText("0x" + receivedCode);
+                new AddReceivedCodeTask().execute(getIntent().getStringExtra("deviceId"));
             }
         });
     }
@@ -75,7 +73,7 @@ public class AddControllerButtonActivity extends AppCompatActivity {
         });
     }
 
-    private void setProgressDialog(){
+    private void setProgressDialog() {
         progressDialog = new ProgressDialog(AddControllerButtonActivity.this);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
     }
@@ -102,6 +100,42 @@ public class AddControllerButtonActivity extends AppCompatActivity {
             super.onPreExecute();
             progressDialog.setMessage("Loading...");
             progressDialog.show();
+        }
+    }
+
+    class AddReceivedCodeTask extends AsyncTask<String, Boolean, String> {
+
+        @Override
+        protected String doInBackground(String... strings) {
+            String key = requestsManager.receiveCodeKey(strings[0]);
+            System.out.println(key);
+
+            String code = requestsManager.getReceivedCode(storage.readSession().token, key);
+            while (code.equals("")) {
+                code = requestsManager.getReceivedCode(storage.readSession().token, key);
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            System.out.println(code);
+            return code;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog.setMessage("Waiting for code...\nPoint your IR to receiver");
+            progressDialog.show();
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            String receivedCode = Long.toHexString(Long.parseLong(s));
+            buttonCodeInput.setText("0x" + receivedCode);
+            progressDialog.dismiss();
         }
     }
 }

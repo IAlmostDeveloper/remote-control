@@ -108,7 +108,7 @@ public class RequestsManager {
         return false;
     }
 
-    public long receiveCode(String controllerId){
+    public String receiveCodeKey(String controllerId){
         JSONObject requestBody = new JSONObject();
 
         try {
@@ -128,12 +128,27 @@ public class RequestsManager {
             if (response.code() == 200) {
                 String rawBody = response.body().string();
 
-                return Long.parseLong(new JSONObject(rawBody).get("code").toString());
+                return new JSONObject(rawBody).get("key").toString();
             }
         } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
-        return -1;
+        return "";
+    }
+
+    public String getReceivedCode(String token, String key){
+        Call<ResponseBody> call = service.receivedCode(token, key);
+        try {
+            Response<ResponseBody> response = call.execute();
+            if (response.code() == 200) {
+                String bodyraw = response.body().string();
+                JSONObject responseBody = new JSONObject(bodyraw);
+                return responseBody.getString("code");
+            }
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 
     public HashMap<String, IController> getControllers(String username, String token) {

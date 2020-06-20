@@ -187,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void setProgressDialog(){
+    private void setProgressDialog() {
         progressDialog = new ProgressDialog(MainActivity.this);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
     }
