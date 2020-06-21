@@ -4,6 +4,38 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorAccent"
     tools:context=".activities.CreateScriptActivity">
+
+    <Button
+        android:id="@+id/addButtonButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/Button"
+        app:layout_constraintTop_toTopOf="parent"
+        android:text="Add button"/>
+
+    <ScrollView
+        android:id="@+id/buttonsScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_marginTop="20dp"
+        android:scrollbarStyle="insideOverlay"
+        app:layout_constraintTop_toBottomOf="@id/addButtonButton">
+
+        <LinearLayout
+            android:id="@+id/buttonsLayout"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:orientation="vertical" />
+    </ScrollView>
+
+    <Button
+        android:id="@+id/createScriptButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/Button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="Create script"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

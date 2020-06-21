@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorAccent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/controllersSpinnerLabel"
+        style="@style/TextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Controller:"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Spinner
+        android:id="@+id/controllersSpinner"
+        style="@style/Spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:spinnerMode="dropdown"
+        app:layout_constraintTop_toBottomOf="@id/controllersSpinnerLabel" />
+
+    <TextView
+        android:id="@+id/selectButtonLabel"
+        style="@style/TextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Select button:"
+        app:layout_constraintTop_toBottomOf="@id/controllersSpinner" />
+
+    <ScrollView
+        android:id="@+id/buttonsScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_marginTop="20dp"
+        android:scrollbarStyle="insideOverlay"
+        app:layout_constraintTop_toBottomOf="@id/selectButtonLabel">
+
+        <LinearLayout
+            android:id="@+id/buttonsLayout"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:orientation="vertical" />
+    </ScrollView>
+
+    <TextView
+        android:id="@+id/selectedControllerLabel"
+        style="@style/TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Controller :"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/buttonsScrollView" />
+
+    <Button
+        android:id="@+id/selectedButton"
+        style="@style/Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Selected button"
+        app:layout_constraintLeft_toRightOf="@id/selectedControllerLabel"
+        app:layout_constraintTop_toBottomOf="@id/buttonsScrollView" />
+
+    <TextView
+        android:id="@+id/selectedButtonCodeLabel"
+        style="@style/TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Code"
+        app:layout_constraintLeft_toRightOf="@id/selectedButton"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/buttonsScrollView" />
+
+
+    <TextView
+        android:id="@+id/repeatsCountLabel"
+        style="@style/TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Repeats count: "
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/selectedButton" />
+
+    <EditText
+        android:id="@+id/repeatsCountInput"
+        style="@style/EditText"
+        android:layout_width="30dp"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        app:layout_constraintLeft_toRightOf="@id/repeatsCountLabel"
+        app:layout_constraintTop_toBottomOf="@id/selectedButton" />
+
+    <TextView
+        android:id="@+id/delayLabel"
+        style="@style/TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Delay between clicks(ms): "
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/repeatsCountInput" />
+
+    <EditText
+        android:id="@+id/delayInput"
+        style="@style/EditText"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        app:layout_constraintLeft_toRightOf="@id/delayLabel"
+        app:layout_constraintTop_toBottomOf="@id/repeatsCountInput" />
+
+    <Button
+        android:id="@+id/applyDialogButton"
+        style="@style/Button"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:text="Add"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
