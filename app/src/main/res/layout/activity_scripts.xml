@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorAccent"
     tools:context=".activities.ScriptsActivity">
 
     <TextView
@@ -17,15 +18,25 @@
     <ScrollView
         android:id="@+id/scriptsScrollView"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="400dp"
         android:layout_marginTop="20dp"
         android:scrollbarStyle="insideOverlay"
         app:layout_constraintTop_toBottomOf="@id/scriptsLabel">
         <LinearLayout
-            android:id="@+id/buttonsLayout"
+            android:id="@+id/scriptsLayout"
             android:layout_width="match_parent"
             android:layout_height="300dp"
             android:orientation="vertical" />
     </ScrollView>
+
+    <Button
+        android:id="@+id/addScriptButton"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        style="@style/Button"
+        android:text="add script"
+        android:textSize="15dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -61,7 +61,18 @@ public class MainActivity extends AppCompatActivity {
         setProgressDialog();
         setLogoutButton();
         setAddControllerButton();
+        setScriptsButton();
         new GetControllersTask().execute();
+    }
+
+    private void setScriptsButton() {
+        Button scriptsButton = findViewById(R.id.myScriptsButton);
+        scriptsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivityForResult(new Intent(getApplicationContext(), ScriptsActivity.class), 3);
+            }
+        });
     }
 
     private void setLogoutButton() {
@@ -215,6 +226,8 @@ public class MainActivity extends AppCompatActivity {
                     currentController.addControllerButton(newButton);
                     new UpdateControllerTask().execute(currentController);
                 }
+                break;
+            case 3:
                 break;
         }
     }

@@ -13,6 +13,7 @@
         <item name="android:textColor">@color/colorText</item>
         <item name="android:radius">10dp</item>
         <item name="android:layout_margin">10dp</item>
+        <item name="android:textSize">10dp</item>
     </style>
 
     <style name="Spinner" parent="Widget.AppCompat.DropDownItem.Spinner">
