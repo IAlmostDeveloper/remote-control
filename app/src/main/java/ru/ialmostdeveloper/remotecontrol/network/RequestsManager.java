@@ -285,15 +285,82 @@ public class RequestsManager {
         return false;
     }
 
-    public List<ControllerScript> getUserScripts(){
-        return null;
+    public List<ControllerScript> getUserScripts(String user, String token){
+        Call<ResponseBody> call = service.userScripts(user, token);
+        List<ControllerScript> controllerScripts = new ArrayList<>();
+        try {
+            Response<ResponseBody> response = call.execute();
+            if (response.code() == 200) {
+                String bodyraw = response.body().string();
+                JSONObject responseBody = new JSONObject(bodyraw);
+                JSONArray scriptsArray = responseBody.getJSONArray("scripts");
+                for(int i=0;i<scriptsArray.length();i++){
+                    JSONObject rawScript = new JSONObject(scriptsArray.get(i).toString());
+                    int id = rawScript.getInt("id");
+                    String name = rawScript.getString("name");
+                    String sequence = rawScript.getString("sequence");
+                    controllerScripts.add(new ControllerScript(id, name, sequence));
+                }
+
+            }
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+        return controllerScripts;
     }
 
-    public boolean addScript(){
-        return true;
+    public boolean addScript(ControllerScript script, String login, String token){
+        JSONObject requestBody = new JSONObject();
+        StringBuilder buttons = new StringBuilder();
+
+        try {
+            requestBody.put("token", token);
+            requestBody.put("name", script.name);
+            requestBody.put("user", login);
+            requestBody.put("sequence", script.sequence);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody bodyRequest = RequestBody.create(MediaType.parse("application/json"), requestBody.toString());
+        Call<ResponseBody> call = service.addScript(bodyRequest);
+
+        try {
+            Response<ResponseBody> response = call.execute();
+
+            if (response.code() == 200) {
+                String bodyraw = response.body().string();
+                JSONObject responseBody = new JSONObject(bodyraw);
+                System.out.println(responseBody.toString());
+                return true;
+            }
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
-    public boolean executeScript(){
-        return true;
+    public boolean executeScript(int id, String token){
+        JSONObject requestBody = new JSONObject();
+        StringBuilder buttons = new StringBuilder();
+
+        try {
+            requestBody.put("token", token);
+            requestBody.put("id", id);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody bodyRequest = RequestBody.create(MediaType.parse("application/json"), requestBody.toString());
+        Call<ResponseBody> call = service.executeScript(bodyRequest);
+
+        try {
+            Response<ResponseBody> response = call.execute();
+
+            if (response.code() == 200) {
+                return true;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }
