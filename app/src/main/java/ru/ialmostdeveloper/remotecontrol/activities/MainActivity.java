@@ -148,8 +148,9 @@ public class MainActivity extends AppCompatActivity {
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    String code = "0x" + Long.toHexString(buttonName.code);
                     new SendCodeTask().execute(currentController.getDeviceId(),
-                            String.valueOf(buttonName.code), currentController.getClassName());
+                           code , currentController.getClassName());
 
                 }
             });
