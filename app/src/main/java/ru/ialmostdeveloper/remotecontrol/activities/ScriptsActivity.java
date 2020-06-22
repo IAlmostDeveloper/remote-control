@@ -1,6 +1,8 @@
 package ru.ialmostdeveloper.remotecontrol.activities;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -93,7 +95,7 @@ public class ScriptsActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Boolean aBoolean) {
-            LinearLayout scriptsLayout = findViewById(R.id.scriptsLayout);
+            final LinearLayout scriptsLayout = findViewById(R.id.scriptsLayout);
             LinearLayout.LayoutParams layoutParams =
                     new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             layoutParams.setMargins(5, 5, 5, 5);
@@ -107,6 +109,27 @@ public class ScriptsActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         new ExecuteScriptTask().execute(String.valueOf(script.id), storage.readSession().token);
+                    }
+                });
+                button.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        new AlertDialog.Builder(ScriptsActivity.this, android.R.style.Theme_Material_Dialog_Alert)
+                                .setTitle("Delete script?")
+                                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        scriptsLayout.removeView(button);
+                                        new DeleteScriptTask().execute(storage.readSession().token,
+                                                storage.readSession().login, button.getText().toString());
+                                    }
+                                })
+                                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                    }
+                                }).create().show();
+                        return false;
                     }
                 });
                 scriptsLayout.addView(button);
@@ -136,5 +159,31 @@ public class ScriptsActivity extends AppCompatActivity {
             super.onPostExecute(aBoolean);
             progressDialog.dismiss();
         }
+    }
+
+    class DeleteScriptTask extends AsyncTask<String, Void, Boolean>{
+
+        @Override
+        protected Boolean doInBackground(String... strings) {
+            String token = strings[0];
+            String user = strings[1];
+            String name = strings[2];
+            return requestsManager.deleteScript(token, user, name);
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog.setMessage("Removing script...");
+            progressDialog.show();
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            super.onPostExecute(aBoolean);
+            progressDialog.dismiss();
+        }
+
+
     }
 }

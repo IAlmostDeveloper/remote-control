@@ -363,4 +363,30 @@ public class RequestsManager {
         }
         return false;
     }
+
+    public boolean deleteScript(String token, String user, String name){
+        JSONObject requestBody = new JSONObject();
+        StringBuilder buttons = new StringBuilder();
+
+        try {
+            requestBody.put("token", token);
+            requestBody.put("user", user);
+            requestBody.put("name", name);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody bodyRequest = RequestBody.create(MediaType.parse("application/json"), requestBody.toString());
+        Call<ResponseBody> call = service.deleteScript(bodyRequest);
+
+        try {
+            Response<ResponseBody> response = call.execute();
+
+            if (response.code() == 200) {
+                return true;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

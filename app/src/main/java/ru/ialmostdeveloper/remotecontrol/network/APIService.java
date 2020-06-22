@@ -10,15 +10,15 @@ import retrofit2.http.POST;
 import retrofit2.http.Query;
 
 public interface APIService {
-    @Headers( "Content-Type: application/json; charset=utf-8")
+    @Headers("Content-Type: application/json; charset=utf-8")
     @POST("/auth")
     Call<ResponseBody> auth(@Body RequestBody body);
 
-    @Headers( "Content-Type: application/json; charset=utf-8")
+    @Headers("Content-Type: application/json; charset=utf-8")
     @POST("/register")
     Call<ResponseBody> register(@Body RequestBody body);
 
-    @Headers( "Content-Type: application/json; charset=utf-8")
+    @Headers("Content-Type: application/json; charset=utf-8")
     @POST("/send")
     Call<ResponseBody> send(@Body RequestBody body);
 
@@ -48,4 +48,7 @@ public interface APIService {
 
     @POST("/execute")
     Call<ResponseBody> executeScript(@Body RequestBody body);
+
+    @POST("/delete/script")
+    Call<ResponseBody> deleteScript(@Body RequestBody body);
 }

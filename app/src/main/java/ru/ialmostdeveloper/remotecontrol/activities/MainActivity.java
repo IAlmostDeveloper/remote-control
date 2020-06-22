@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     String code = "0x" + Long.toHexString(buttonName.code);
                     new SendCodeTask().execute(currentController.getDeviceId(),
-                           code , currentController.getClassName());
+                            code, currentController.getClassName());
 
                 }
             });
