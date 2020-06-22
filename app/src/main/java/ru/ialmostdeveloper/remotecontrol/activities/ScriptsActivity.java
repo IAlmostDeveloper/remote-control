@@ -72,6 +72,8 @@ public class ScriptsActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case 0:
+                if (resultCode == RESULT_OK)
+                    new GetScriptsTask().execute(storage.readSession().login, storage.readSession().token);
                 break;
         }
     }
@@ -96,6 +98,7 @@ public class ScriptsActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Boolean aBoolean) {
             final LinearLayout scriptsLayout = findViewById(R.id.scriptsLayout);
+            scriptsLayout.removeAllViews();
             LinearLayout.LayoutParams layoutParams =
                     new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             layoutParams.setMargins(5, 5, 5, 5);
@@ -139,7 +142,8 @@ public class ScriptsActivity extends AppCompatActivity {
         }
     }
 
-    class ExecuteScriptTask extends AsyncTask<String, Void, Boolean>{
+
+    class ExecuteScriptTask extends AsyncTask<String, Void, Boolean> {
         @Override
         protected Boolean doInBackground(String... strings) {
             int scriptId = Integer.parseInt(strings[0]);
@@ -161,7 +165,7 @@ public class ScriptsActivity extends AppCompatActivity {
         }
     }
 
-    class DeleteScriptTask extends AsyncTask<String, Void, Boolean>{
+    class DeleteScriptTask extends AsyncTask<String, Void, Boolean> {
 
         @Override
         protected Boolean doInBackground(String... strings) {
