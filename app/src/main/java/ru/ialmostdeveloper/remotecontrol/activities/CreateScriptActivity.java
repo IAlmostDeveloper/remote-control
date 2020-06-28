@@ -280,7 +280,7 @@ public class CreateScriptActivity extends AppCompatActivity {
             setControllersSpinner();
             setControlsLayout();
             selectButtonDialog.show();
-            selectButtonDialog.getWindow().setLayout(700, 1100);
+            selectButtonDialog.getWindow().setLayout(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             progressDialog.dismiss();
         }
 

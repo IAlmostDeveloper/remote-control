@@ -114,8 +114,9 @@
         android:id="@+id/applyDialogButton"
         style="@style/Button"
         android:layout_width="match_parent"
-        android:layout_height="30dp"
+        android:layout_height="40dp"
+        android:layout_marginBottom="10dp"
         android:text="Add"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/delayInput" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
