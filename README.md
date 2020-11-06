@@ -7,3 +7,7 @@ App for IR remote control devices
 - Retrofit
 - Dagger
 - Paho.MQTT
+
+### Сборка и запуск
+
+- Собираем и запускаем как проект в Android Studio
