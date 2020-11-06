@@ -73,4 +73,60 @@ public class Storage {
             e.printStackTrace();
         }
     }
+
+    public String readServerUrl(){
+        File folder = new File(context.getFilesDir(), "mqtt");
+        File file = new File(folder.getAbsolutePath() + "ServerUrl.txt");
+        String url = "";
+        try {
+            StringBuilder urlRaw = new StringBuilder();
+            if (file.exists()) {
+                FileInputStream stream = new FileInputStream(file);
+                int i;
+
+                while ((i = stream.read()) != -1) {
+                    urlRaw.append((char) i);
+                }
+                if(!urlRaw.toString().isEmpty()){
+                    url = urlRaw.toString();
+                }
+            } else {
+                try {
+                    file.createNewFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return url.isEmpty() ? "https://ik.remzalp.ru" : url;
+    }
+
+    public void writeServerUrl(String newServerUrl){
+        File folder = new File(context.getFilesDir(), "mqtt");
+        File file = new File(folder.getAbsolutePath() + "ServerUrl.txt");
+        if (!folder.exists()) {
+            folder.mkdir();
+        }
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        try {
+            File fileToWrite = new File(file.getAbsolutePath());
+            FileWriter writer = new FileWriter(fileToWrite);
+            writer.append(newServerUrl);
+            writer.flush();
+            writer.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

@@ -32,6 +32,18 @@
         android:layout_height="wrap_content"
         android:inputType="textPassword" />
 
+    <TextView
+        style="@style/TextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Server Url(including http(s)):" />
+
+    <EditText
+        android:id="@+id/server_url_input"
+        style="@style/EditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
     <Button
         android:id="@+id/signIn_btn"
         style="@style/Button"

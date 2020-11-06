@@ -53,10 +53,10 @@ class AppModule {
 
     @Provides
     @Singleton
-    Retrofit provideRetrofit(){
+    Retrofit provideRetrofit(Storage storage){
         return new Retrofit.Builder()
                 .addConverterFactory(GsonConverterFactory.create())
-                .baseUrl("https://ik.remzalp.ru")
+                .baseUrl(storage.readServerUrl())
                 .build();
     }
 

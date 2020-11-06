@@ -27,6 +27,7 @@ public class AuthActivity extends AppCompatActivity {
 
     EditText loginInput;
     EditText passwordInput;
+    EditText serverUrlInput;
     ProgressDialog progressDialog;
 
     @Override
@@ -47,9 +48,11 @@ public class AuthActivity extends AppCompatActivity {
     private void setInputFields() {
         loginInput = findViewById(R.id.login_input);
         passwordInput = findViewById(R.id.password_input);
+        serverUrlInput = findViewById(R.id.server_url_input);
         Session session = storage.readSession();
         loginInput.setText(session.login);
         passwordInput.setText(session.password);
+        serverUrlInput.setText(storage.readServerUrl());
 
     }
 
@@ -65,6 +68,7 @@ public class AuthActivity extends AppCompatActivity {
                             Toast.LENGTH_SHORT).show();
                     return;
                 }
+                storage.writeServerUrl(serverUrlInput.getText().toString());
                 new RegTask().execute(login, password);
             }
         });
@@ -83,6 +87,7 @@ public class AuthActivity extends AppCompatActivity {
                             Toast.LENGTH_SHORT).show();
                     return;
                 }
+                storage.writeServerUrl(serverUrlInput.getText().toString());
                 new AuthTask().execute(login, password);
             }
         });
